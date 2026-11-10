@@ -3,17 +3,16 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
-  ChevronDown,
-  Sliders,
+  ArrowLeft,
   Heart,
-  Shuffle,
+  Sliders,
+  ListMusic,
   SkipBack,
+  SkipForward,
+  RotateCcw,
+  RotateCw,
   Play,
   Pause,
-  SkipForward,
-  Repeat,
-  Repeat1,
-  ListMusic,
   Music,
 } from 'lucide-react-native';
 import { colors } from '../../src/theme/colors';
@@ -26,8 +25,6 @@ export default function FullPlayerScreen() {
   const router = useRouter();
   const currentTrack = usePlayerStore((s) => s.currentTrack);
   const isPlaying = usePlayerStore((s) => s.isPlaying);
-  const shuffle = usePlayerStore((s) => s.shuffle);
-  const repeatMode = usePlayerStore((s) => s.repeatMode);
   const positionMs = usePlayerStore((s) => s.positionMs);
   const durationMs = usePlayerStore((s) => s.durationMs);
   const toggleFavorite = useLibraryStore((s) => s.toggleFavorite);
@@ -37,9 +34,9 @@ export default function FullPlayerScreen() {
   if (!currentTrack) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.topBar}>
+        <View style={styles.topHeader}>
           <TouchableOpacity onPress={() => router.back()}>
-            <ChevronDown color={colors.textPrimary} size={28} />
+            <ArrowLeft color="#FFFFFF" size={26} />
           </TouchableOpacity>
         </View>
         <View style={styles.emptyContainer}>
@@ -54,147 +51,148 @@ export default function FullPlayerScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Top Bar */}
-      <View style={styles.topBar}>
+      {/* Dynamic Ambient Background Glow from Reference 2 */}
+      <View style={styles.ambientGlow} />
+
+      {/* Top Header from Reference 2 */}
+      <View style={styles.topHeader}>
         <TouchableOpacity
           onPress={() => router.back()}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          hitSlop={{ top: 14, bottom: 14, left: 14, right: 14 }}
         >
-          <ChevronDown color={colors.textPrimary} size={28} />
+          <ArrowLeft color="#FFFFFF" size={24} />
         </TouchableOpacity>
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerOverline}>REPRODUCIENDO</Text>
-          <Text style={styles.headerSubtitle} numberOfLines={1}>
-            {currentTrack.albumTitle || 'Biblioteca Local'}
-          </Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => router.push('/equalizer' as any)}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <Sliders color={colors.textPrimary} size={22} />
-        </TouchableOpacity>
+        <Text style={styles.headerTrackName} numberOfLines={1}>
+          {currentTrack.title}
+        </Text>
+        <View style={{ width: 24 }} />
       </View>
 
-      {/* Album Artwork */}
+      {/* Hero Circular Artwork Vignette from Reference 2 */}
       <View style={styles.artworkSection}>
-        <View style={styles.artworkWrapper}>
+        <View style={styles.circularArtworkFrame}>
           {currentTrack.artworkUri ? (
-            <Image source={{ uri: currentTrack.artworkUri }} style={styles.artwork} />
+            <Image source={{ uri: currentTrack.artworkUri }} style={styles.circularArtwork} />
           ) : (
-            <View style={styles.placeholderArtwork}>
-              <Music color={colors.primary} size={80} />
+            <View style={styles.placeholderCircular}>
+              <Music color="#38BDF8" size={72} />
             </View>
           )}
         </View>
-      </View>
 
-      {/* Track Info */}
-      <View style={styles.infoSection}>
-        <View style={styles.titleWrapper}>
-          <Text style={styles.trackTitle} numberOfLines={1}>
-            {currentTrack.title}
-          </Text>
-          <Text style={styles.trackArtist} numberOfLines={1}>
-            {currentTrack.artistName || 'Artista desconocido'}
-          </Text>
+        {/* Track Title & Artist from Reference 2 */}
+        <Text style={styles.trackTitle} numberOfLines={1}>
+          {currentTrack.title}
+        </Text>
+        <Text style={styles.trackArtist} numberOfLines={1}>
+          {currentTrack.artistName || 'Artista desconocido'}
+        </Text>
+
+        {/* Action Pills Row (Heart, Equalizer, Queue) from Reference 2 */}
+        <View style={styles.actionPillRow}>
+          <TouchableOpacity
+            style={styles.actionPillButton}
+            onPress={() => toggleFavorite(currentTrack.id)}
+            activeOpacity={0.8}
+          >
+            <Heart
+              color={currentTrack.isFavorite ? colors.error : '#E2E8F0'}
+              size={20}
+              fill={currentTrack.isFavorite ? colors.error : 'transparent'}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionPillButton}
+            onPress={() => router.push('/equalizer' as any)}
+            activeOpacity={0.8}
+          >
+            <Sliders color="#E2E8F0" size={20} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionPillButton}
+            onPress={() => router.push('/player/queue' as any)}
+            activeOpacity={0.8}
+          >
+            <ListMusic color="#E2E8F0" size={20} />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          onPress={() => toggleFavorite(currentTrack.id)}
-          style={styles.favoriteButton}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <Heart
-            color={currentTrack.isFavorite ? colors.error : colors.textMuted}
-            size={24}
-            fill={currentTrack.isFavorite ? colors.error : 'transparent'}
-          />
-        </TouchableOpacity>
       </View>
 
-      {/* Seek Bar */}
-      <View style={styles.seekSection}>
+      {/* Glassmorphic Player Controls Card from Reference 2 */}
+      <View style={styles.glassmorphicCard}>
+        {/* Progress Bar & Timestamps */}
         <TouchableOpacity
           activeOpacity={1}
           onPress={(e) => {
             const { locationX } = e.nativeEvent;
-            // Seek bar approximation based on screen ratio
             if (durationMs > 0) {
               const approxRatio = Math.max(0, Math.min(1, locationX / 300));
               playbackService.seekTo(approxRatio * durationMs);
             }
           }}
-          style={styles.progressBarBackground}
+          style={styles.seekTrack}
         >
-          <View style={[styles.progressBarFill, { width: `${progress * 100}%` }]} />
+          <View style={[styles.seekFill, { width: `${progress * 100}%` }]}>
+            <View style={styles.seekThumb} />
+          </View>
         </TouchableOpacity>
+
         <View style={styles.timeRow}>
           <Text style={styles.timeText}>{formatTime(positionMs)}</Text>
           <Text style={styles.timeText}>{formatTime(durationMs)}</Text>
         </View>
-      </View>
 
-      {/* Primary Controls */}
-      <View style={styles.controlsSection}>
-        <TouchableOpacity
-          onPress={() => playbackService.toggleShuffle()}
-          style={styles.auxControl}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <Shuffle color={shuffle ? colors.primary : colors.textMuted} size={22} />
-        </TouchableOpacity>
+        {/* Media Controls Row: [Prev] [-10] [Big Play] [+10] [Next] from Reference 2 */}
+        <View style={styles.controlsRow}>
+          <TouchableOpacity
+            onPress={() => playbackService.skipPrevious()}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
+            <SkipBack color="#FFFFFF" size={26} fill="#FFFFFF" />
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => playbackService.skipPrevious()}
-          style={styles.skipControl}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <SkipBack color={colors.textPrimary} size={30} fill={colors.textPrimary} />
-        </TouchableOpacity>
+          {/* Rewind 10 Seconds */}
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => playbackService.seekRelative(-10000)}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
+            <RotateCcw color="#FFFFFF" size={18} />
+            <Text style={styles.secondsLabel}>10</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => playbackService.togglePlayPause()}
-          style={styles.playPauseButton}
-          activeOpacity={0.8}
-        >
-          {isPlaying ? (
-            <Pause color="#0A0D14" size={32} fill="#0A0D14" />
-          ) : (
-            <Play color="#0A0D14" size={32} fill="#0A0D14" style={{ marginLeft: 3 }} />
-          )}
-        </TouchableOpacity>
+          {/* Center Play/Pause Circle */}
+          <TouchableOpacity
+            style={styles.bigPlayButton}
+            onPress={() => playbackService.togglePlayPause()}
+            activeOpacity={0.85}
+          >
+            {isPlaying ? (
+              <Pause color="#0A0D15" size={30} fill="#0A0D15" />
+            ) : (
+              <Play color="#0A0D15" size={30} fill="#0A0D15" style={{ marginLeft: 3 }} />
+            )}
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => playbackService.skipNext()}
-          style={styles.skipControl}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <SkipForward color={colors.textPrimary} size={30} fill={colors.textPrimary} />
-        </TouchableOpacity>
+          {/* Forward 10 Seconds */}
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => playbackService.seekRelative(10000)}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
+            <RotateCw color="#FFFFFF" size={18} />
+            <Text style={styles.secondsLabel}>10</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => playbackService.cycleRepeatMode()}
-          style={styles.auxControl}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          {repeatMode === 'one' ? (
-            <Repeat1 color={colors.primary} size={22} />
-          ) : (
-            <Repeat color={repeatMode === 'all' ? colors.primary : colors.textMuted} size={22} />
-          )}
-        </TouchableOpacity>
-      </View>
-
-      {/* Bottom Bar: Queue toggle */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={styles.queueButton}
-          onPress={() => router.push('/player/queue' as any)}
-          activeOpacity={0.7}
-        >
-          <ListMusic color={colors.textSecondary} size={20} />
-          <Text style={styles.queueText}>Cola de reproducción</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => playbackService.skipNext()}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
+            <SkipForward color="#FFFFFF" size={26} fill="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -210,149 +208,172 @@ function formatTime(ms: number): string {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#0A0F1A', // Deep emerald/navy ambient base from Reference 2
     justifyContent: 'space-between',
-    paddingBottom: 20,
+    paddingBottom: 24,
   },
-  topBar: {
+  ambientGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 380,
+    backgroundColor: 'rgba(16, 53, 42, 0.45)', // Atmospheric green haze from Reference 2
+    borderBottomLeftRadius: 180,
+    borderBottomRightRadius: 180,
+  },
+  topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 14,
   },
-  headerTitleContainer: {
-    alignItems: 'center',
+  headerTrackName: {
+    fontSize: 18,
+    fontWeight: '300',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
     maxWidth: '70%',
-  },
-  headerOverline: {
-    ...typography.small,
-    color: colors.textMuted,
-    letterSpacing: 1.5,
-  },
-  headerSubtitle: {
-    ...typography.caption,
-    color: colors.textPrimary,
-    fontWeight: '600',
-    marginTop: 2,
   },
   artworkSection: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 36,
-    marginVertical: 16,
+    paddingHorizontal: 24,
+    marginVertical: 10,
   },
-  artworkWrapper: {
-    width: 280,
-    height: 280,
-    borderRadius: 24,
-    backgroundColor: colors.surfaceElevated,
+  circularArtworkFrame: {
+    width: 240,
+    height: 240,
+    borderRadius: 120, // Circular vignette from Reference 2
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.border,
-    elevation: 12,
-    shadowColor: '#00E5FF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
+    backgroundColor: '#1E2538',
+    elevation: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.6,
+    shadowRadius: 24,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    marginBottom: 26,
   },
-  artwork: {
+  circularArtwork: {
     width: '100%',
     height: '100%',
   },
-  placeholderArtwork: {
+  placeholderCircular: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  infoSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 28,
-  },
-  titleWrapper: {
-    flex: 1,
-    marginRight: 16,
+    backgroundColor: '#121826',
   },
   trackTitle: {
-    ...typography.h2,
-    color: colors.textPrimary,
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 6,
   },
   trackArtist: {
-    ...typography.body,
-    color: colors.textSecondary,
-    marginTop: 4,
+    fontSize: 15,
+    color: '#94A3B8',
+    textAlign: 'center',
+    marginBottom: 20,
   },
-  favoriteButton: {
-    padding: 8,
+  actionPillRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
   },
-  seekSection: {
-    paddingHorizontal: 28,
-    marginTop: 10,
+  actionPillButton: {
+    padding: 4,
   },
-  progressBarBackground: {
+  glassmorphicCard: {
+    marginHorizontal: 18,
+    backgroundColor: 'rgba(23, 29, 44, 0.85)', // Translucent glass effect from Reference 2
+    borderRadius: 28,
+    paddingHorizontal: 20,
+    paddingVertical: 22,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.09)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 10,
+  },
+  seekTrack: {
     height: 4,
-    backgroundColor: colors.progressBarBackground,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
     borderRadius: 2,
-    overflow: 'hidden',
+    position: 'relative',
+    marginTop: 6,
   },
-  progressBarFill: {
+  seekFill: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 2,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  seekThumb: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#FFFFFF',
+    marginRight: -6,
   },
   timeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 8,
+    marginTop: 10,
+    marginBottom: 16,
   },
   timeText: {
-    ...typography.small,
-    color: colors.textMuted,
+    fontSize: 12,
+    color: '#94A3B8',
+    fontWeight: '500',
   },
-  controlsSection: {
+  controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 28,
-    marginVertical: 8,
+    paddingHorizontal: 8,
   },
-  auxControl: {
-    padding: 10,
+  secondaryButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
   },
-  skipControl: {
-    padding: 10,
+  secondsLabel: {
+    position: 'absolute',
+    fontSize: 8,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    top: 17,
   },
-  playPauseButton: {
+  bigPlayButton: {
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: colors.primary,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 8,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-  },
-  bottomBar: {
-    alignItems: 'center',
-    paddingTop: 8,
-  },
-  queueButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: colors.surface,
-  },
-  queueText: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    fontWeight: '500',
+    shadowColor: '#FFFFFF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
   emptyContainer: {
     flex: 1,
@@ -365,4 +386,3 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
 });
-

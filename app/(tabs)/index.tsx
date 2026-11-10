@@ -1,130 +1,233 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Sparkles, HardDrive, ArrowDownToLine, Music2, Play } from 'lucide-react-native';
+import {
+  SlidersHorizontal,
+  Cast,
+  Search,
+  Music2,
+  Disc,
+  Calendar,
+  ListMusic,
+  FolderPlus,
+  Radio,
+  Play,
+  ChevronRight,
+  PlusCircle,
+} from 'lucide-react-native';
 import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
+import { WaveLogo } from '../../src/components/common/WaveLogo';
 import { useLibraryStore } from '../../src/store/library-store';
 import { usePlayerStore } from '../../src/store/player-store';
+import { PlaybackService } from '../../src/playback/service/playback-service';
+import { LocalFileImporter } from '../../src/core/utils/local-file-importer';
+import { DEMO_TRACKS, loadDemoTracksIntoLibrary } from '../../src/core/utils/sample-data';
+import { Track } from '../../src/domain/entities/track';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const totalTracks = useLibraryStore((s) => s.totalTracks);
   const tracks = useLibraryStore((s) => s.tracks);
-  const setQueue = usePlayerStore((s) => s.setQueue);
+  const playbackService = PlaybackService.getInstance();
+
+  useEffect(() => {
+    // If library is totally empty on first launch, offer or auto-load demo tracks
+    if (tracks.length === 0) {
+      loadDemoTracksIntoLibrary().catch(console.error);
+    }
+  }, []);
+
+  const handlePickLocalMusic = async () => {
+    try {
+      const imported = await LocalFileImporter.pickAndImportAudioFiles();
+      if (imported.length > 0) {
+        Alert.alert(
+          '¡Música importada!',
+          `Se agregaron ${imported.length} archivo(s) de audio local a tu biblioteca de OpenWave.`
+        );
+      }
+    } catch (err: any) {
+      Alert.alert('Error', err?.message || 'No se pudo seleccionar el archivo.');
+    }
+  };
+
+  const handlePlayTrack = (track: Track, list: Track[], index: number) => {
+    playbackService.playTrack(track, list, index);
+  };
+
+  // Group or sample albums
+  const displayAlbums = tracks.slice(0, 8);
+  const recentAlbums = tracks.slice(0, 4);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.appName}>OPENWAVE</Text>
-            <Text style={styles.subtitle}>Reproductor Offline & Soberanía Musical</Text>
-          </View>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>v1.1</Text>
-          </View>
+      {/* Top Bar matching Reference 1 */}
+      <View style={styles.topBar}>
+        <View style={styles.logoRow}>
+          <WaveLogo size={30} />
+          <Text style={styles.brandTitle}>OPENWAVE</Text>
         </View>
 
-        {/* Quick Stats Banner */}
-        <View style={styles.statsCard}>
-          <View style={styles.statItem}>
-            <Music2 color={colors.primary} size={24} />
-            <Text style={styles.statNumber}>{totalTracks}</Text>
-            <Text style={styles.statLabel}>Canciones</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <HardDrive color={colors.secondary} size={24} />
-            <Text style={styles.statNumber}>100%</Text>
-            <Text style={styles.statLabel}>Offline</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Sparkles color={colors.accent} size={24} />
-            <Text style={styles.statNumber}>FLAC/MP3</Text>
-            <Text style={styles.statLabel}>Hi-Fi</Text>
-          </View>
-        </View>
-
-        {/* Quick Actions */}
-        <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
-        <View style={styles.actionGrid}>
+        <View style={styles.headerActionPill}>
           <TouchableOpacity
-            style={styles.actionCard}
+            style={styles.headerIconButton}
+            onPress={() => router.push('/(tabs)/library' as any)}
+          >
+            <SlidersHorizontal color="#FFFFFF" size={18} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.headerIconButton}
+            onPress={() => router.push('/equalizer' as any)}
+          >
+            <Cast color="#FFFFFF" size={18} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.headerIconButton}
+            onPress={() => router.push('/(tabs)/search' as any)}
+          >
+            <Search color="#FFFFFF" size={18} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Quick Action Capsules (2 Columns) from Reference 1 */}
+        <View style={styles.mixesGrid}>
+          <TouchableOpacity
+            style={styles.mixCapsule}
             onPress={() => router.push('/(tabs)/library' as any)}
             activeOpacity={0.8}
           >
-            <View style={[styles.iconCircle, { backgroundColor: colors.primaryMuted }]}>
-              <HardDrive color={colors.primary} size={22} />
-            </View>
-            <Text style={styles.actionTitle}>Escanear Biblioteca</Text>
-            <Text style={styles.actionDescription}>Buscar canciones en la memoria local</Text>
+            <Music2 color="#A5B4FC" size={18} />
+            <Text style={styles.mixText}>Track mix</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/importer' as any)}
+            style={styles.mixCapsule}
+            onPress={() => router.push('/(tabs)/library' as any)}
             activeOpacity={0.8}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(0, 200, 150, 0.15)' }]}>
-              <ArrowDownToLine color={colors.secondary} size={22} />
-            </View>
-            <Text style={styles.actionTitle}>Importar Listas</Text>
-            <Text style={styles.actionDescription}>Desde Spotify o Google Takeout</Text>
+            <Disc color="#A5B4FC" size={18} />
+            <Text style={styles.mixText}>Album mix</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.mixCapsule}
+            onPress={() => router.push('/(tabs)/library' as any)}
+            activeOpacity={0.8}
+          >
+            <Calendar color="#A5B4FC" size={18} />
+            <Text style={styles.mixText}>Decade mix</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.mixCapsule}
+            onPress={() => router.push('/player/queue' as any)}
+            activeOpacity={0.8}
+          >
+            <ListMusic color="#A5B4FC" size={18} />
+            <Text style={styles.mixText}>Queues</Text>
+          </TouchableOpacity>
+
+          {/* User's requested: Upload / Pick Local Music */}
+          <TouchableOpacity
+            style={[styles.mixCapsule, styles.highlightMixCapsule]}
+            onPress={handlePickLocalMusic}
+            activeOpacity={0.8}
+          >
+            <FolderPlus color={colors.primary} size={18} />
+            <Text style={[styles.mixText, { color: colors.primary, fontWeight: '700' }]}>
+              Subir Música Local
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.mixCapsule}
+            onPress={() => loadDemoTracksIntoLibrary()}
+            activeOpacity={0.8}
+          >
+            <Radio color="#A5B4FC" size={18} />
+            <Text style={styles.mixText}>Internet radios</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Featured / Recent section */}
+        {/* MOST PLAYED ALBUMS Section from Reference 1 */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Canciones Disponibles</Text>
-          {tracks.length > 0 && (
-            <TouchableOpacity onPress={() => setQueue(tracks, 0)}>
-              <Text style={styles.playAllText}>Reproducir todo</Text>
-            </TouchableOpacity>
-          )}
+          <Text style={styles.sectionTitle}>MOST PLAYED ALBUMS</Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/library' as any)}>
+            <ChevronRight color={colors.textSecondary} size={20} />
+          </TouchableOpacity>
         </View>
 
-        {tracks.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Music2 color={colors.textDisabled} size={48} />
-            <Text style={styles.emptyTitle}>Tu biblioteca está vacía</Text>
-            <Text style={styles.emptySubtitle}>
-              Ve a la pestaña Biblioteca para escanear los archivos de audio de tu dispositivo Android.
-            </Text>
-            <TouchableOpacity
-              style={styles.scanButton}
-              onPress={() => router.push('/(tabs)/library' as any)}
-            >
-              <Text style={styles.scanButtonText}>Ir a Biblioteca</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.trackList}>
-            {tracks.slice(0, 5).map((track, index) => (
+        <View style={styles.albumsGrid}>
+          {displayAlbums.map((item, index) => (
+            <View key={item.id} style={styles.albumItem}>
               <TouchableOpacity
-                key={track.id}
-                style={styles.trackItem}
-                onPress={() => setQueue(tracks, index)}
+                style={styles.coverWrapper}
+                onPress={() => handlePlayTrack(item, displayAlbums, index)}
+                activeOpacity={0.9}
               >
-                <View style={styles.trackIndex}>
-                  <Text style={styles.trackIndexText}>{index + 1}</Text>
+                {item.artworkUri ? (
+                  <Image source={{ uri: item.artworkUri }} style={styles.albumCover} />
+                ) : (
+                  <View style={styles.placeholderCover}>
+                    <Music2 color={colors.primary} size={32} />
+                  </View>
+                )}
+                {/* Play Button Overlay (bottom-left) as in Reference 1 */}
+                <View style={styles.playOverlay}>
+                  <Play color="#FFFFFF" size={14} fill="#FFFFFF" style={{ marginLeft: 2 }} />
                 </View>
-                <View style={styles.trackInfo}>
-                  <Text style={styles.trackTitle} numberOfLines={1}>
-                    {track.title}
-                  </Text>
-                  <Text style={styles.trackArtist} numberOfLines={1}>
-                    {track.artistName || 'Artista desconocido'}
-                  </Text>
-                </View>
-                <Play color={colors.textMuted} size={18} />
               </TouchableOpacity>
-            ))}
-          </View>
-        )}
+
+              <Text style={styles.albumTitle} numberOfLines={1}>
+                {item.title}
+              </Text>
+              <Text style={styles.albumArtist} numberOfLines={1}>
+                {item.artistName || 'Artista desconocido'}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* RECENTLY ADDED ALBUMS Section from Reference 1 */}
+        <View style={[styles.sectionHeader, { marginTop: 28 }]}>
+          <Text style={styles.sectionTitle}>RECENTLY ADDED ALBUMS</Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/library' as any)}>
+            <ChevronRight color={colors.textSecondary} size={20} />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
+          {recentAlbums.map((item, index) => (
+            <View key={`recent_${item.id}`} style={styles.recentAlbumItem}>
+              <TouchableOpacity
+                style={styles.recentCoverWrapper}
+                onPress={() => handlePlayTrack(item, recentAlbums, index)}
+                activeOpacity={0.9}
+              >
+                {item.artworkUri ? (
+                  <Image source={{ uri: item.artworkUri }} style={styles.recentAlbumCover} />
+                ) : (
+                  <View style={styles.placeholderCover}>
+                    <Disc color={colors.primary} size={48} />
+                  </View>
+                )}
+                <View style={styles.recentPlayOverlay}>
+                  <Play color="#FFFFFF" size={18} fill="#FFFFFF" style={{ marginLeft: 2 }} />
+                </View>
+              </TouchableOpacity>
+
+              <Text style={styles.recentTitle} numberOfLines={1}>
+                {item.albumTitle || item.title}
+              </Text>
+              <Text style={styles.recentArtist} numberOfLines={1}>
+                {item.artistName || 'OpenWave Collection'}
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
       </ScrollView>
     </SafeAreaView>
   );
@@ -133,184 +236,169 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#090C15', // Deep rich dark tone from Reference 1
+  },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  brandTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: 1.5,
+  },
+  headerActionPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#161C2C', // Rounded pill container from Reference 1
+    borderRadius: 24,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    gap: 16,
+  },
+  headerIconButton: {
+    padding: 2,
   },
   scrollContent: {
-    padding: 20,
+    paddingHorizontal: 16,
     paddingBottom: 40,
   },
-  header: {
+  mixesGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 10,
+    marginBottom: 26,
+  },
+  mixCapsule: {
+    width: '48.3%',
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-  },
-  appName: {
-    ...typography.h1,
-    color: colors.primary,
-    letterSpacing: 2,
-  },
-  subtitle: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  badge: {
-    backgroundColor: colors.surfaceElevated,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  badgeText: {
-    ...typography.small,
-    color: colors.primary,
-    fontWeight: '700',
-  },
-  statsCard: {
-    flexDirection: 'row',
-    backgroundColor: colors.surface,
+    backgroundColor: '#141A28',
     borderRadius: 16,
-    padding: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    gap: 10,
     borderWidth: 1,
-    borderColor: colors.border,
-    justifyContent: 'space-around',
-    marginBottom: 28,
+    borderColor: 'rgba(255, 255, 255, 0.04)',
   },
-  statItem: {
-    alignItems: 'center',
+  highlightMixCapsule: {
+    backgroundColor: 'rgba(0, 229, 255, 0.08)',
+    borderColor: 'rgba(0, 229, 255, 0.25)',
   },
-  statNumber: {
-    ...typography.h3,
-    color: colors.textPrimary,
-    marginTop: 6,
-  },
-  statLabel: {
-    ...typography.small,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-  statDivider: {
-    width: 1,
-    height: '70%',
-    backgroundColor: colors.border,
-    alignSelf: 'center',
-  },
-  sectionTitle: {
-    ...typography.h2,
-    color: colors.textPrimary,
-    marginBottom: 14,
+  mixText: {
+    ...typography.caption,
+    color: '#D1D5DB',
+    fontWeight: '600',
   },
   sectionHeader: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 14,
-    marginBottom: 12,
-  },
-  playAllText: {
-    ...typography.caption,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  actionGrid: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 24,
-  },
-  actionCard: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  iconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  actionTitle: {
-    ...typography.bodyBold,
-    color: colors.textPrimary,
-    marginBottom: 4,
-  },
-  actionDescription: {
-    ...typography.caption,
-    color: colors.textMuted,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginTop: 8,
-  },
-  emptyTitle: {
-    ...typography.bodyBold,
-    color: colors.textPrimary,
-    marginTop: 12,
-  },
-  emptySubtitle: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginTop: 6,
     marginBottom: 16,
-    paddingHorizontal: 12,
   },
-  scanButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
+  sectionTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#A5B4FC', // Violet-indigo accent tone from Reference 1
+    letterSpacing: 1,
   },
-  scanButtonText: {
-    ...typography.caption,
-    color: '#0A0D14',
-    fontWeight: '700',
-  },
-  trackList: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    overflow: 'hidden',
-  },
-  trackItem: {
+  albumsGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: 18,
   },
-  trackIndex: {
-    width: 28,
+  albumItem: {
+    width: '23%', // 4 items per row as in Reference 1
   },
-  trackIndexText: {
-    ...typography.caption,
-    color: colors.textMuted,
+  coverWrapper: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 14,
+    overflow: 'hidden',
+    backgroundColor: '#1E2538',
+    position: 'relative',
+    marginBottom: 6,
   },
-  trackInfo: {
+  albumCover: {
+    width: '100%',
+    height: '100%',
+  },
+  placeholderCover: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#1A2133',
   },
-  trackTitle: {
+  playOverlay: {
+    position: 'absolute',
+    bottom: 6,
+    left: 6,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  albumTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#F3F4F6',
+  },
+  albumArtist: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    marginTop: 2,
+  },
+  horizontalScroll: {
+    gap: 16,
+    paddingRight: 16,
+  },
+  recentAlbumItem: {
+    width: 150,
+  },
+  recentCoverWrapper: {
+    width: 150,
+    height: 150,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#1E2538',
+    position: 'relative',
+    marginBottom: 8,
+  },
+  recentAlbumCover: {
+    width: '100%',
+    height: '100%',
+  },
+  recentPlayOverlay: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recentTitle: {
     ...typography.bodyBold,
-    color: colors.textPrimary,
+    color: '#F3F4F6',
   },
-  trackArtist: {
+  recentArtist: {
     ...typography.caption,
-    color: colors.textSecondary,
+    color: '#9CA3AF',
     marginTop: 2,
   },
 });
-

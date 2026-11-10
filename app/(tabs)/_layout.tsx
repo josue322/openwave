@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router';
-import { Home, Library, Search, Settings } from 'lucide-react-native';
+import { Home, ListMusic, Music, Disc3, Settings } from 'lucide-react-native';
 import { colors } from '../../src/theme/colors';
 import { MiniPlayer } from '../../src/components/player/MiniPlayer';
 
@@ -12,42 +12,58 @@ export default function TabsLayout() {
         screenOptions={{
           headerShown: false,
           tabBarStyle: styles.tabBar,
-          tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: colors.textMuted,
-          tabBarLabelStyle: styles.tabBarLabel,
+          tabBarShowLabel: false, // Icon-only sleek bottom bar like Reference 1
+          tabBarActiveTintColor: '#FFFFFF',
+          tabBarInactiveTintColor: '#64748B',
         }}
       >
         <Tabs.Screen
           name="index"
           options={{
             title: 'Inicio',
-            tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.iconWrapper, focused && styles.activeCapsule]}>
+                <Home color={color} size={22} fill={focused ? color : 'transparent'} />
+              </View>
+            ),
           }}
         />
         <Tabs.Screen
           name="library"
           options={{
             title: 'Biblioteca',
-            tabBarIcon: ({ color, size }) => <Library color={color} size={size} />,
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.iconWrapper, focused && styles.activeCapsule]}>
+                <ListMusic color={color} size={22} />
+              </View>
+            ),
           }}
         />
         <Tabs.Screen
           name="search"
           options={{
-            title: 'Buscar',
-            tabBarIcon: ({ color, size }) => <Search color={color} size={size} />,
+            title: 'Explorar',
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.iconWrapper, focused && styles.activeCapsule]}>
+                <Music color={color} size={22} />
+              </View>
+            ),
           }}
         />
         <Tabs.Screen
           name="settings"
           options={{
             title: 'Ajustes',
-            tabBarIcon: ({ color, size }) => <Settings color={color} size={size} />,
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.iconWrapper, focused && styles.activeCapsule]}>
+                <Settings color={color} size={22} />
+              </View>
+            ),
           }}
         />
       </Tabs>
 
-      {/* Mini Player sits persistently above the tab bar */}
+      {/* Floating Mini Player from Reference 1 */}
       <MiniPlayer />
     </View>
   );
@@ -56,19 +72,27 @@ export default function TabsLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#090C15',
   },
   tabBar: {
-    backgroundColor: colors.surface,
-    borderTopColor: colors.border,
+    backgroundColor: '#0D111C', // Dark navy bar matching Reference 1
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
     borderTopWidth: 1,
-    height: 60,
+    height: 64,
+    paddingTop: 8,
     paddingBottom: 8,
-    paddingTop: 6,
+    elevation: 12,
   },
-  tabBarLabel: {
-    fontSize: 11,
-    fontWeight: '500',
+  iconWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 48,
+    height: 38,
+    borderRadius: 19,
+  },
+  activeCapsule: {
+    backgroundColor: '#2D3A56', // Active rounded capsule as in Reference 1
+    width: 52,
+    height: 38,
   },
 });
-

@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Play, Pause, SkipForward, Music } from 'lucide-react-native';
+import { Play, Pause, SkipBack, SkipForward, Heart, Music } from 'lucide-react-native';
 import { usePlayerStore } from '../../store/player-store';
+import { useLibraryStore } from '../../store/library-store';
 import { PlaybackService } from '../../playback/service/playback-service';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
@@ -13,6 +14,7 @@ export const MiniPlayer: React.FC = () => {
   const isPlaying = usePlayerStore((s) => s.isPlaying);
   const positionMs = usePlayerStore((s) => s.positionMs);
   const durationMs = usePlayerStore((s) => s.durationMs);
+  const toggleFavorite = useLibraryStore((s) => s.toggleFavorite);
 
   const playbackService = PlaybackService.getInstance();
 
@@ -23,103 +25,139 @@ export const MiniPlayer: React.FC = () => {
   const progress = durationMs > 0 ? Math.min(1, positionMs / durationMs) : 0;
 
   return (
-    <View style={styles.container}>
-      {/* Progress Bar Header */}
-      <View style={styles.progressBackground}>
-        <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
-      </View>
+    <View style={styles.wrapper}>
+      {/* Mini Player Floating Capsule */}
+      <View style={styles.capsule}>
+        {/* Progress indicator along top edge */}
+        <View style={styles.progressBar}>
+          <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+        </View>
 
-      <TouchableOpacity
-        style={styles.content}
-        activeOpacity={0.9}
-        onPress={() => router.push('/player' as any)}
-      >
-        {/* Artwork / Icon */}
-        <View style={styles.artworkContainer}>
-          {currentTrack.artworkUri ? (
-            <Image source={{ uri: currentTrack.artworkUri }} style={styles.artwork} />
-          ) : (
-            <View style={styles.placeholderArtwork}>
-              <Music color={colors.primary} size={20} />
+        <View style={styles.mainRow}>
+          {/* Left: Track Information Block with Artwork */}
+          <TouchableOpacity
+            style={styles.trackInfoBlock}
+            activeOpacity={0.85}
+            onPress={() => router.push('/player' as any)}
+          >
+            <View style={styles.artworkContainer}>
+              {currentTrack.artworkUri ? (
+                <Image source={{ uri: currentTrack.artworkUri }} style={styles.artwork} />
+              ) : (
+                <View style={styles.placeholderArtwork}>
+                  <Music color={colors.primary} size={18} />
+                </View>
+              )}
             </View>
-          )}
-        </View>
 
-        {/* Track Title and Artist */}
-        <View style={styles.infoContainer}>
-          <Text style={styles.title} numberOfLines={1}>
-            {currentTrack.title}
-          </Text>
-          <Text style={styles.artist} numberOfLines={1}>
-            {currentTrack.artistName || 'Artista desconocido'}
-          </Text>
-        </View>
-
-        {/* Controls */}
-        <View style={styles.controls}>
-          <TouchableOpacity
-            onPress={(e) => {
-              e.stopPropagation();
-              playbackService.togglePlayPause();
-            }}
-            style={styles.controlButton}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            {isPlaying ? (
-              <Pause color={colors.textPrimary} size={22} fill={colors.textPrimary} />
-            ) : (
-              <Play color={colors.textPrimary} size={22} fill={colors.textPrimary} />
-            )}
+            <View style={styles.textContainer}>
+              <Text style={styles.title} numberOfLines={1}>
+                {currentTrack.title}
+              </Text>
+              <Text style={styles.artist} numberOfLines={1}>
+                {currentTrack.artistName || 'Artista desconocido'}
+              </Text>
+            </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={(e) => {
-              e.stopPropagation();
-              playbackService.skipNext();
-            }}
-            style={styles.controlButton}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <SkipForward color={colors.textSecondary} size={22} />
-          </TouchableOpacity>
+          {/* Right: Media Controls from Reference Image 1 */}
+          <View style={styles.controlsRow}>
+            <TouchableOpacity
+              onPress={() => playbackService.skipPrevious()}
+              style={styles.iconButton}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <SkipBack color={colors.textPrimary} size={18} fill={colors.textPrimary} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => playbackService.togglePlayPause()}
+              style={styles.playButton}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              {isPlaying ? (
+                <Pause color={colors.textPrimary} size={22} fill={colors.textPrimary} />
+              ) : (
+                <Play color={colors.textPrimary} size={22} fill={colors.textPrimary} style={{ marginLeft: 2 }} />
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => playbackService.skipNext()}
+              style={styles.iconButton}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <SkipForward color={colors.textPrimary} size={18} fill={colors.textPrimary} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => toggleFavorite(currentTrack.id)}
+              style={styles.iconButton}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Heart
+                color={currentTrack.isFavorite ? colors.error : colors.textPrimary}
+                size={20}
+                fill={currentTrack.isFavorite ? colors.error : 'transparent'}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-      </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.surfaceElevated,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+  wrapper: {
+    paddingHorizontal: 12,
+    paddingBottom: 6,
+    backgroundColor: 'transparent',
   },
-  progressBackground: {
+  capsule: {
+    backgroundColor: '#121620',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  progressBar: {
     height: 2,
-    backgroundColor: colors.progressBarBackground,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     width: '100%',
   },
   progressFill: {
     height: '100%',
     backgroundColor: colors.primary,
   },
-  content: {
+  mainRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    justifyContent: 'space-between',
+  },
+  trackInfoBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#274268', // Styled blue accent pill as in Reference 1
+    borderRadius: 18,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    maxWidth: '56%',
   },
   artworkContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 8,
+    width: 38,
+    height: 38,
+    borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: colors.surfaceHighlight,
+    marginRight: 10,
   },
   artwork: {
     width: '100%',
@@ -129,28 +167,31 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.surfaceHighlight,
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
-  infoContainer: {
+  textContainer: {
     flex: 1,
-    marginHorizontal: 12,
   },
   title: {
-    ...typography.bodyBold,
-    color: colors.textPrimary,
+    ...typography.caption,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   artist: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    marginTop: 2,
+    ...typography.small,
+    color: 'rgba(255, 255, 255, 0.7)',
+    marginTop: 1,
   },
-  controls: {
+  controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 14,
+    paddingRight: 8,
   },
-  controlButton: {
-    padding: 6,
+  iconButton: {
+    padding: 4,
+  },
+  playButton: {
+    padding: 4,
   },
 });
-

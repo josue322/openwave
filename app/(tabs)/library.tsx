@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Music, RefreshCw, Heart } from 'lucide-react-native';
+import { Music, RefreshCw, Heart, FolderPlus, Play, Disc } from 'lucide-react-native';
 import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
 import { useLibraryStore } from '../../src/store/library-store';
-import { usePlayerStore } from '../../src/store/player-store';
 import { Track } from '../../src/domain/entities/track';
 import { TrackRepository } from '../../src/data/repositories/track-repository';
 import { PlaybackService } from '../../src/playback/service/playback-service';
+import { LocalFileImporter } from '../../src/core/utils/local-file-importer';
 
-type Tab = 'songs' | 'albums' | 'artists' | 'playlists' | 'favorites';
+type Tab = 'songs' | 'albums' | 'artists' | 'favorites';
 
 export default function LibraryScreen() {
   const [activeTab, setActiveTab] = useState<Tab>('songs');
@@ -26,7 +26,6 @@ export default function LibraryScreen() {
   const playbackService = PlaybackService.getInstance();
 
   useEffect(() => {
-    // Load tracks from SQLite cache on mount
     loadInitialData();
   }, []);
 
@@ -38,6 +37,20 @@ export default function LibraryScreen() {
       setFavorites(favs);
     } catch (err) {
       console.error('Error loading tracks from SQLite:', err);
+    }
+  };
+
+  const handlePickLocalFile = async () => {
+    try {
+      const imported = await LocalFileImporter.pickAndImportAudioFiles();
+      if (imported.length > 0) {
+        Alert.alert(
+          '¡Música importada!',
+          `Se importaron ${imported.length} archivo(s) de audio local.`
+        );
+      }
+    } catch (err: any) {
+      Alert.alert('Error', err?.message || 'No se pudo seleccionar el archivo.');
     }
   };
 
@@ -77,7 +90,11 @@ export default function LibraryScreen() {
       activeOpacity={0.7}
     >
       <View style={styles.trackIconContainer}>
-        <Music color={colors.primary} size={18} />
+        {item.artworkUri ? (
+          <Image source={{ uri: item.artworkUri }} style={styles.trackThumb} />
+        ) : (
+          <Music color={colors.primary} size={18} />
+        )}
       </View>
       <View style={styles.trackDetails}>
         <Text style={styles.trackTitle} numberOfLines={1}>
@@ -106,24 +123,36 @@ export default function LibraryScreen() {
       {/* Top Header */}
       <View style={styles.header}>
         <Text style={styles.screenTitle}>Biblioteca</Text>
-        <TouchableOpacity
-          style={[styles.scanButton, isScanning && styles.scanButtonDisabled]}
-          activeOpacity={0.8}
-          onPress={handleScan}
-          disabled={isScanning}
-        >
-          {isScanning ? (
-            <ActivityIndicator size="small" color={colors.primary} />
-          ) : (
-            <RefreshCw color={colors.primary} size={18} />
-          )}
-          <Text style={styles.scanButtonText}>
-            {isScanning ? 'Escaneando...' : 'Escanear'}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.headerButtons}>
+          {/* User's requested button: Pick Local File */}
+          <TouchableOpacity
+            style={styles.actionPillButton}
+            onPress={handlePickLocalFile}
+            activeOpacity={0.8}
+          >
+            <FolderPlus color={colors.primary} size={16} />
+            <Text style={styles.actionPillText}>Subir archivo</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.actionPillButton, isScanning && styles.buttonDisabled]}
+            activeOpacity={0.8}
+            onPress={handleScan}
+            disabled={isScanning}
+          >
+            {isScanning ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <RefreshCw color={colors.primary} size={16} />
+            )}
+            <Text style={styles.actionPillText}>
+              {isScanning ? 'Escaneando...' : 'Escanear'}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* Tabs Filter */}
+      {/* Tabs Filter matching Reference 1 style */}
       <View style={styles.tabsContainer}>
         <TabButton
           label="Canciones"
@@ -145,11 +174,6 @@ export default function LibraryScreen() {
           active={activeTab === 'artists'}
           onPress={() => setActiveTab('artists')}
         />
-        <TabButton
-          label="Playlists"
-          active={activeTab === 'playlists'}
-          onPress={() => setActiveTab('playlists')}
-        />
       </View>
 
       {/* Content */}
@@ -159,9 +183,47 @@ export default function LibraryScreen() {
           <Text style={styles.emptyText}>No hay pistas disponibles</Text>
           <Text style={styles.emptySubtext}>
             {activeTab === 'favorites'
-              ? 'Marca pistas con el corazón para verlas aquí.'
-              : 'Presiona "Escanear" para indexar la música de tu teléfono.'}
+              ? 'Marca canciones con el corazón para verlas aquí.'
+              : 'Presiona "Subir archivo" para importar un audio descargado o "Escanear" para buscar en el dispositivo.'}
           </Text>
+          <TouchableOpacity style={styles.emptyAddButton} onPress={handlePickLocalFile}>
+            <FolderPlus color="#0A0D15" size={18} />
+            <Text style={styles.emptyAddText}>Seleccionar Audio Descargado</Text>
+          </TouchableOpacity>
+        </View>
+      ) : activeTab === 'albums' ? (
+        <View style={styles.albumsGridContainer}>
+          <FlatList
+            data={displayTracks}
+            keyExtractor={(item) => item.id}
+            numColumns={3}
+            columnWrapperStyle={styles.albumsRow}
+            contentContainerStyle={styles.listContent}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity
+                style={styles.albumGridCard}
+                onPress={() => playbackService.playTrack(item, displayTracks, index)}
+                activeOpacity={0.85}
+              >
+                <View style={styles.albumCoverBox}>
+                  {item.artworkUri ? (
+                    <Image source={{ uri: item.artworkUri }} style={styles.gridCover} />
+                  ) : (
+                    <Disc color={colors.primary} size={36} />
+                  )}
+                  <View style={styles.gridPlayOverlay}>
+                    <Play color="#FFFFFF" size={12} fill="#FFFFFF" />
+                  </View>
+                </View>
+                <Text style={styles.albumGridTitle} numberOfLines={1}>
+                  {item.albumTitle || item.title}
+                </Text>
+                <Text style={styles.albumGridArtist} numberOfLines={1}>
+                  {item.artistName || 'Desconocido'}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
         </View>
       ) : (
         <FlatList
@@ -204,7 +266,7 @@ function formatDuration(ms: number): string {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#090C15',
   },
   header: {
     flexDirection: 'row',
@@ -215,49 +277,53 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     ...typography.h1,
-    color: colors.textPrimary,
+    color: '#FFFFFF',
   },
-  scanButton: {
+  headerButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actionPillButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surfaceElevated,
-    paddingHorizontal: 14,
+    backgroundColor: '#161C2C',
+    paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     gap: 6,
   },
-  scanButtonDisabled: {
+  buttonDisabled: {
     opacity: 0.7,
   },
-  scanButtonText: {
-    ...typography.caption,
-    color: colors.primary,
+  actionPillText: {
+    fontSize: 12,
+    color: '#FFFFFF',
     fontWeight: '600',
   },
   tabsContainer: {
     flexDirection: 'row',
     paddingHorizontal: 20,
     gap: 8,
-    marginBottom: 12,
+    marginBottom: 14,
   },
   tabButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: colors.surface,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    borderRadius: 18,
+    backgroundColor: '#141A28',
   },
   tabButtonActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: '#2D3A56', // Active indicator matching Reference 1
   },
   tabText: {
-    ...typography.caption,
-    color: colors.textSecondary,
+    fontSize: 13,
+    color: '#94A3B8',
     fontWeight: '500',
   },
   tabTextActive: {
-    color: '#0A0D14',
+    color: '#FFFFFF',
     fontWeight: '700',
   },
   listContent: {
@@ -269,27 +335,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: 'rgba(255, 255, 255, 0.04)',
   },
   trackIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: colors.surfaceElevated,
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    backgroundColor: '#161C2C',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 14,
+    overflow: 'hidden',
+  },
+  trackThumb: {
+    width: '100%',
+    height: '100%',
   },
   trackDetails: {
     flex: 1,
   },
   trackTitle: {
     ...typography.bodyBold,
-    color: colors.textPrimary,
+    color: '#FFFFFF',
   },
   trackSubtitle: {
     ...typography.caption,
-    color: colors.textSecondary,
+    color: '#94A3B8',
     marginTop: 2,
   },
   favButton: {
@@ -303,13 +374,73 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...typography.bodyBold,
-    color: colors.textPrimary,
+    color: '#FFFFFF',
     marginTop: 12,
   },
   emptySubtext: {
     ...typography.caption,
-    color: colors.textSecondary,
+    color: '#94A3B8',
     textAlign: 'center',
     marginTop: 6,
+    marginBottom: 20,
+  },
+  emptyAddButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 24,
+    gap: 8,
+  },
+  emptyAddText: {
+    ...typography.bodyBold,
+    color: '#0A0D15',
+  },
+  albumsGridContainer: {
+    flex: 1,
+  },
+  albumsRow: {
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  albumGridCard: {
+    width: '31%',
+  },
+  albumCoverBox: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 14,
+    backgroundColor: '#1E2538',
+    overflow: 'hidden',
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+  gridCover: {
+    width: '100%',
+    height: '100%',
+  },
+  gridPlayOverlay: {
+    position: 'absolute',
+    bottom: 6,
+    left: 6,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(0,0,0,0.65)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  albumGridTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#F3F4F6',
+  },
+  albumGridArtist: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    marginTop: 1,
   },
 });

@@ -159,6 +159,12 @@ export class PlaybackService {
     usePlayerStore.getState().setPosition(positionMs);
   }
 
+  public async seekRelative(offsetMs: number): Promise<void> {
+    const store = usePlayerStore.getState();
+    const newPos = Math.max(0, Math.min(store.durationMs || Infinity, store.positionMs + offsetMs));
+    await this.seekTo(newPos);
+  }
+
   public toggleShuffle(): boolean {
     const isShuffled = this.queueManager.toggleShuffle();
     const store = usePlayerStore.getState();
