@@ -1,0 +1,47 @@
+import * as SQLite from 'expo-sqlite';
+import { SCHEMA_V1 } from './schema';
+
+const DB_NAME = 'openwave.db';
+let dbInstance: SQLite.SQLiteDatabase | null = null;
+
+export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
+  if (dbInstance) {
+    return dbInstance;
+  }
+
+  dbInstance = await SQLite.openDatabaseAsync(DB_NAME);
+
+  // Enable foreign keys and Write-Ahead Logging (WAL) for high performance
+  await dbInstance.execAsync('PRAGMA foreign_keys = ON;');
+  await dbInstance.execAsync('PRAGMA journal_mode = WAL;');
+
+  await initMigrations(dbInstance);
+
+  return dbInstance;
+}
+
+async function initMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
+  // Metadata table for database versioning
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS _migrations (
+      version INTEGER PRIMARY KEY,
+      applied_at INTEGER NOT NULL
+    );
+  `);
+
+  const row = await db.getFirstAsync<{ version: number }>(
+    'SELECT MAX(version) as version FROM _migrations'
+  );
+
+  const currentVersion = row?.version ?? 0;
+
+  if (currentVersion < 1) {
+    await db.execAsync(SCHEMA_V1);
+    await db.runAsync(
+      'INSERT INTO _migrations (version, applied_at) VALUES (?, ?)',
+      1,
+      Date.now()
+    );
+  }
+}
+
