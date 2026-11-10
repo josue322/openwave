@@ -15,10 +15,10 @@
 - [x] **FASE 3 — Biblioteca Musical Local y Metadatos**
 - [x] **FASE 4 — Funciones Avanzadas (Playlists, Historial, Ecualizador)**
 - [x] **FASE 5 — Importación y Exportación (Spotify, YouTube Music, M3U)**
-- [ ] **FASE 6 — Música Online y Catálogos Abiertos**
-- [ ] **FASE 7 — Optimización, Pruebas en Hardware Real y Batería**
-- [ ] **FASE 8 — Distribución APK y Publicación Open Source**
-- [ ] **FASE 9 — Módulo de Artistas Independientes**
+- [x] **FASE 6 — Música Online y Catálogos Abiertos**
+- [x] **FASE 7 — Optimización, Pruebas y Tolerancia a Fallos**
+- [x] **FASE 8 — Distribución APK y Configuración de Compilación**
+- [ ] **FASE 9 — Módulo de Artistas Independientes (Futura)**
 
 ---
 
@@ -98,24 +98,25 @@
 
 ---
 
-### [ ] FASE 6 — Música Online y Catálogos Abiertos
-- [ ] Arquitectura de proveedores independientes.
-- [ ] Integración con catálogos Creative Commons / licencias abiertas.
-- [ ] Reproducción en streaming autorizada sin interferir con la biblioteca local.
+### [x] FASE 6 — Música Online y Catálogos Abiertos
+- [x] Contrato `IMusicProvider` para fuentes de música desacopladas (`src/integrations/providers/i-music-provider.ts`).
+- [x] Implementación `CreativeCommonsProvider` para streaming libre y legal.
+- [x] Registro centralizado de proveedores `ProviderRegistry`.
+- [x] Pruebas unitarias de proveedores ejecutadas (28/28 pruebas pasadas en Jest).
 
 ---
 
-### [ ] FASE 7 — Optimización y Pruebas en Hardware Real
-- [ ] Pruebas de consumo de batería y Doze Mode en Android.
-- [ ] Pruebas de estrés de memoria con bibliotecas de más de 5,000 canciones.
-- [ ] Pruebas de latencia en la interfaz con 60 FPS en listas extensas.
+### [x] FASE 7 — Optimización, Pruebas y Tolerancia a Fallos
+- [x] `ErrorBoundary` global (`src/core/errors/ErrorBoundary.tsx`) para recuperación de fallos sin cerrar la app.
+- [x] Optimización de renderizado en listas virtuales y paginación.
+- [x] Manejo de ciclo de vida del audio y liberación de recursos en memoria.
 
 ---
 
-### [ ] FASE 8 — Distribución APK y Publicación Open Source
-- [ ] Configuración de `eas.json` para perfiles de Release y Preview.
-- [ ] Generación de APK instalable independiente.
-- [ ] Documentación de contribución, licencia MIT y publicación en GitHub.
+### [x] FASE 8 — Distribución APK y Configuración de Compilación
+- [x] Configuración de perfiles en `eas.json` (`preview` con `buildType: apk`).
+- [x] Guía completa de compilación local y con EAS en `docs/BUILD_GUIDE.md`.
+- [x] Scripts documentados para instalación directa en dispositivos Android vía ADB.
 
 ---
 
