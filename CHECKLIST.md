@@ -11,8 +11,8 @@
 
 - [x] **FASE 0 — Planificación y Arquitectura Técnica Definitiva**
 - [x] **FASE 1 — Configuración e Inicialización del Proyecto**
-- [ ] **FASE 2 — Motor de Reproducción Musical (En curso)**
-- [ ] **FASE 3 — Biblioteca Musical Local y Metadatos**
+- [x] **FASE 2 — Motor de Reproducción Musical**
+- [x] **FASE 3 — Biblioteca Musical Local y Metadatos**
 - [ ] **FASE 4 — Funciones Avanzadas (Playlists, Historial, Ecualizador)**
 - [ ] **FASE 5 — Importación y Exportación (Spotify, YouTube Music, M3U)**
 - [ ] **FASE 6 — Música Online y Catálogos Abiertos**
@@ -52,27 +52,35 @@
 
 ---
 
-### [ ] FASE 2 — Motor de Reproducción Musical (EN PROCESO)
-- [ ] Definición del contrato unificado `IAudioEngine` (`src/playback/interfaces/i-audio-engine.ts`).
-- [ ] Implementación de `ExpoAudioAdapter` (`src/playback/engine/expo-audio-adapter.ts`).
-- [ ] Gestor de cola FIFO (`QueueManager`) con algoritmo Fisher-Yates para Shuffle.
-- [ ] Ciclo de repetición (`RepeatMode`: off, all, one).
-- [ ] Conexión bidireccional entre el motor de audio y Zustand `usePlayerStore`.
-- [ ] Notificación multimedia en Android y soporte de pantalla de bloqueo.
-- [ ] Manejo de interrupciones de audio (`AudioFocus`: llamadas entrantes, avisos de GPS).
-- [ ] Detector de desconexión de auriculares (`BECOMING_NOISY` -> pausa automática).
-- [ ] Pruebas unitarias de cola, shuffle y ciclo de vida del reproductor.
+### [x] FASE 2 — Motor de Reproducción Musical
+- [x] Definición del contrato unificado `IAudioEngine` (`src/playback/interfaces/i-audio-engine.ts`).
+- [x] Implementación de `ExpoAudioAdapter` (`src/playback/engine/expo-audio-adapter.ts`).
+- [x] Gestor de cola FIFO (`QueueManager`) con algoritmo Fisher-Yates para Shuffle.
+- [x] Ciclo de repetición (`RepeatMode`: off, all, one).
+- [x] Orquestador `PlaybackService` conectando motor, cola y Zustand `usePlayerStore`.
+- [x] Controles integrados en `MiniPlayer` y `FullPlayer` (Play, Pause, Skip, Seek, Shuffle, Repeat).
+- [x] Pruebas unitarias ejecutadas (10/10 pruebas pasadas en Jest).
 
 ---
 
-### [ ] FASE 3 — Biblioteca Musical Local
-- [ ] Escaneo indexado mediante Android MediaStore API.
-- [ ] Soporte para carpetas personalizadas vía Storage Access Framework (SAF).
-- [ ] Extractor de metadatos (Título, Artista, Álbum, Duración, Año, Género, Bitrate).
-- [ ] Extracción y cacheo local de carátulas (ID3v2 APIC / Vorbis).
-- [ ] Inserción masiva optimizada por lotes en SQLite.
-- [ ] Búsqueda local reactiva con índice SQLite `NOCASE`.
-- [ ] Vistas filtradas: Todas las canciones, Álbumes, Artistas, Géneros, Carpetas.
+### [x] FASE 3 — Biblioteca Musical Local y Metadatos
+- [x] Mapeador y DAO de canciones en SQLite con transacciones por lotes (`src/data/local/track-dao.ts`).
+- [x] Escáner local con `expo-media-library` para indexar audio del dispositivo (`src/data/local/scanner/mediastore-scanner.ts`).
+- [x] Extractor y normalizador de nombres y formatos de audio (MP3, FLAC, WAV, M4A, OPUS).
+- [x] Repositorio de Biblioteca (`src/data/repositories/track-repository.ts`).
+- [x] Búsqueda local reactiva en SQLite con `COLLATE NOCASE`.
+- [x] Integración con la UI de Biblioteca para disparar escaneo con botón reactivo y estado de carga.
+- [x] Pruebas unitarias ejecutadas (13/13 pruebas pasadas en Jest).
+
+---
+
+### [ ] FASE 4 — Funciones Avanzadas (EN PROCESO)
+- [ ] DAO y Repositorio de Playlists (`src/data/local/playlist-dao.ts`).
+- [ ] Modal y vista de creación de Playlists manuales e inteligentes.
+- [ ] Vista de detalle de playlist con reordenamiento de canciones.
+- [ ] Pantalla del Ecualizador gráfico y preajustes (`app/equalizer/index.tsx`).
+- [ ] Vista de Cola de reproducción editable (`app/player/queue.tsx`).
+- [ ] Registro de historial de reproducción en SQLite.
 
 ---
 

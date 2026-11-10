@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Music, Disc, Users, ListMusic, RefreshCw, Heart } from 'lucide-react-native';
+import { Music, RefreshCw, Heart } from 'lucide-react-native';
 import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
 import { useLibraryStore } from '../../src/store/library-store';
 import { usePlayerStore } from '../../src/store/player-store';
 import { Track } from '../../src/domain/entities/track';
+import { TrackRepository } from '../../src/data/repositories/track-repository';
+import { PlaybackService } from '../../src/playback/service/playback-service';
 
 type Tab = 'songs' | 'albums' | 'artists' | 'playlists' | 'favorites';
 
@@ -15,15 +17,63 @@ export default function LibraryScreen() {
   const tracks = useLibraryStore((s) => s.tracks);
   const favorites = useLibraryStore((s) => s.favorites);
   const isScanning = useLibraryStore((s) => s.isScanning);
-  const setQueue = usePlayerStore((s) => s.setQueue);
-  const toggleFavorite = useLibraryStore((s) => s.toggleFavorite);
+  const setTracks = useLibraryStore((s) => s.setTracks);
+  const setFavorites = useLibraryStore((s) => s.setFavorites);
+  const setIsScanning = useLibraryStore((s) => s.setIsScanning);
+  const toggleFavoriteStore = useLibraryStore((s) => s.toggleFavorite);
+
+  const trackRepo = new TrackRepository();
+  const playbackService = PlaybackService.getInstance();
+
+  useEffect(() => {
+    // Load tracks from SQLite cache on mount
+    loadInitialData();
+  }, []);
+
+  const loadInitialData = async () => {
+    try {
+      const all = await trackRepo.getAllTracks();
+      const favs = await trackRepo.getFavorites();
+      setTracks(all);
+      setFavorites(favs);
+    } catch (err) {
+      console.error('Error loading tracks from SQLite:', err);
+    }
+  };
+
+  const handleScan = async () => {
+    if (isScanning) return;
+    setIsScanning(true);
+
+    try {
+      const freshTracks = await trackRepo.scanAndSaveTracks();
+      const favs = await trackRepo.getFavorites();
+      setTracks(freshTracks);
+      setFavorites(favs);
+      Alert.alert('Escaneo completado', `Se encontraron ${freshTracks.length} canciones locales.`);
+    } catch (err: any) {
+      Alert.alert('Error al escanear', err?.message || 'No se pudo completar el escaneo.');
+    } finally {
+      setIsScanning(false);
+    }
+  };
+
+  const handleToggleFavorite = async (track: Track) => {
+    const nextFav = !track.isFavorite;
+    toggleFavoriteStore(track.id);
+    try {
+      await trackRepo.toggleFavorite(track.id, nextFav);
+    } catch (err) {
+      console.error('Failed to update favorite status in DB:', err);
+    }
+  };
 
   const displayTracks = activeTab === 'favorites' ? favorites : tracks;
 
   const renderTrackItem = ({ item, index }: { item: Track; index: number }) => (
     <TouchableOpacity
       style={styles.trackRow}
-      onPress={() => setQueue(displayTracks, index)}
+      onPress={() => playbackService.playTrack(item, displayTracks, index)}
       activeOpacity={0.7}
     >
       <View style={styles.trackIconContainer}>
@@ -38,7 +88,7 @@ export default function LibraryScreen() {
         </Text>
       </View>
       <TouchableOpacity
-        onPress={() => toggleFavorite(item.id)}
+        onPress={() => handleToggleFavorite(item)}
         style={styles.favButton}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
@@ -56,8 +106,17 @@ export default function LibraryScreen() {
       {/* Top Header */}
       <View style={styles.header}>
         <Text style={styles.screenTitle}>Biblioteca</Text>
-        <TouchableOpacity style={styles.scanButton} activeOpacity={0.8}>
-          <RefreshCw color={colors.primary} size={18} />
+        <TouchableOpacity
+          style={[styles.scanButton, isScanning && styles.scanButtonDisabled]}
+          activeOpacity={0.8}
+          onPress={handleScan}
+          disabled={isScanning}
+        >
+          {isScanning ? (
+            <ActivityIndicator size="small" color={colors.primary} />
+          ) : (
+            <RefreshCw color={colors.primary} size={18} />
+          )}
           <Text style={styles.scanButtonText}>
             {isScanning ? 'Escaneando...' : 'Escanear'}
           </Text>
@@ -169,6 +228,9 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     gap: 6,
   },
+  scanButtonDisabled: {
+    opacity: 0.7,
+  },
   scanButtonText: {
     ...typography.caption,
     color: colors.primary,
@@ -251,4 +313,3 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
 });
-

@@ -1,27 +1,42 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search as SearchIcon, X, Music, Play } from 'lucide-react-native';
 import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
-import { useLibraryStore } from '../../src/store/library-store';
-import { usePlayerStore } from '../../src/store/player-store';
+import { Track } from '../../src/domain/entities/track';
+import { TrackRepository } from '../../src/data/repositories/track-repository';
+import { PlaybackService } from '../../src/playback/service/playback-service';
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
-  const tracks = useLibraryStore((s) => s.tracks);
-  const setQueue = usePlayerStore((s) => s.setQueue);
+  const [results, setResults] = useState<Track[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const filteredTracks = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-    return tracks.filter(
-      (t) =>
-        t.title.toLowerCase().includes(q) ||
-        (t.artistName && t.artistName.toLowerCase().includes(q)) ||
-        (t.albumTitle && t.albumTitle.toLowerCase().includes(q))
-    );
-  }, [query, tracks]);
+  const trackRepo = new TrackRepository();
+  const playbackService = PlaybackService.getInstance();
+
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!trimmed) {
+      setResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsLoading(true);
+      try {
+        const found = await trackRepo.searchTracks(trimmed);
+        setResults(found);
+      } catch (e) {
+        console.error('Search error:', e);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [query]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -46,25 +61,30 @@ export default function SearchScreen() {
         </View>
       </View>
 
-      {/* Results */}
-      {query.length === 0 ? (
+      {/* Content */}
+      {isLoading ? (
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : query.length === 0 ? (
         <View style={styles.centered}>
           <SearchIcon color={colors.textDisabled} size={48} />
-          <Text style={styles.placeholderText}>Escribe para buscar en tu música local</Text>
+          <Text style={styles.placeholderText}>Escribe para buscar en tu biblioteca local</Text>
         </View>
-      ) : filteredTracks.length === 0 ? (
+      ) : results.length === 0 ? (
         <View style={styles.centered}>
-          <Text style={styles.noResultsText}>No se encontraron resultados para "{query}"</Text>
+          <Text style={styles.noResultsText}>No se encontraron canciones para "{query}"</Text>
         </View>
       ) : (
         <FlatList
-          data={filteredTracks}
+          data={results}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.resultsList}
           renderItem={({ item, index }) => (
             <TouchableOpacity
               style={styles.resultItem}
-              onPress={() => setQueue(filteredTracks, index)}
+              onPress={() => playbackService.playTrack(item, results, index)}
+              activeOpacity={0.7}
             >
               <View style={styles.trackIcon}>
                 <Music color={colors.primary} size={18} />
