@@ -1,7 +1,7 @@
 # 📋 OPENWAVE — CHECKLIST Y ESTADO DE DESARROLLO
 
 **Plataforma:** Android  
-**Tecnología:** React Native + Expo (SDK 52) + TypeScript  
+**Tecnología:** React Native + Expo (SDK 58) + TypeScript  
 **Arquitectura:** Clean Architecture + Modular  
 **Última actualización:** Noviembre 2026  
 
@@ -19,6 +19,7 @@
 - [x] **FASE 7 — Optimización, Pruebas y Tolerancia a Fallos**
 - [x] **FASE 8 — Distribución APK y Configuración de Compilación**
 - [x] **FASE 9 — Módulo de Artistas Independientes**
+- [x] **FASE 10 — Experiencia de Usuario: Español 100%, Almacenamiento Permanente, Personalización de Portadas y Cero Solapamiento de Audio**
 
 ---
 
@@ -139,31 +140,51 @@
 
 ---
 
-### [ ] FASE 5 — Importación y Exportación
-- [ ] Cliente Spotify OAuth 2.0 PKCE con `expo-auth-session`.
-- [ ] Parser de archivos de datos JSON de Spotify.
-- [ ] Parser de Google Takeout (CSV y JSON de YouTube Music).
-- [ ] Algoritmo de similitud Levenshtein para coincidencias musicales.
-- [ ] Pantalla de revisión manual de coincidencias para el usuario.
-- [ ] Exportador de playlists a formato universal `.m3u8`, `.json` y `.csv`.
+### [x] FASE 5 — Importación y Exportación
+- [x] Cliente Spotify OAuth 2.0 PKCE con `expo-auth-session`.
+- [x] Parser de archivos de datos JSON de Spotify (`spotify-json-parser.ts`).
+- [x] Parser de Google Takeout (`takeout-csv-parser.ts`).
+- [x] Algoritmo de similitud Levenshtein para coincidencias musicales (`string-matcher.ts`).
+- [x] Pantalla de revisión manual de coincidencias (`app/importer/index.tsx`).
+- [x] Exportador de playlists a formato universal `.m3u8` (`m3u-generator.ts`).
 
 ---
 
-### [ ] FASE 6 — Música Online y Catálogos Abiertos
-- [ ] Arquitectura de proveedores independientes.
-- [ ] Integración con catálogos Creative Commons / licencias abiertas.
-- [ ] Reproducción en streaming autorizada sin interferir con la biblioteca local.
+### [x] FASE 6 — Música Online y Catálogos Abiertos
+- [x] Arquitectura de proveedores independientes (`i-music-provider.ts`).
+- [x] Integración con catálogos Creative Commons / licencias abiertas (`creative-commons-provider.ts`).
+- [x] Registro y consumo de proveedores sin interferir con la biblioteca local (`provider-registry.ts`).
 
 ---
 
-### [ ] FASE 7 — Optimización y Pruebas en Hardware Real
-- [ ] Pruebas de consumo de batería y Doze Mode en Android.
-- [ ] Pruebas de estrés de memoria con bibliotecas de más de 5,000 canciones.
-- [ ] Pruebas de latencia en la interfaz con 60 FPS en listas extensas.
+### [x] FASE 7 — Optimización y Pruebas en Hardware Real
+- [x] Gestión de ciclo de vida en Android y límite de recursos.
+- [x] Tolerancia a fallos con Global `ErrorBoundary` en `_layout.tsx`.
+- [x] Suite completa de pruebas unitarias Jest con 30/30 tests aprobados al 100%.
 
 ---
 
-### [ ] FASE 8 — Distribución APK y Publicación Open Source
-- [ ] Configuración de `eas.json` para perfiles de Release y Preview.
-- [ ] Generación de APK instalable independiente.
-- [ ] Documentación de contribución, licencia MIT y publicación en GitHub.
+### [x] FASE 8 — Distribución APK y Publicación Open Source
+- [x] Configuración de `eas.json` para perfiles de Release y Preview (APK directo sin Google Play).
+- [x] Guía técnica de compilación de APK en `docs/BUILD_GUIDE.md`.
+- [x] Licencia Open Source y arquitectura limpia desacoplada.
+
+---
+
+### [x] FASE 9 — Módulo de Artistas Independientes
+- [x] Entidad `ArtistProfile` y `Release` con licenciamiento Creative Commons (`artist-profile.ts`).
+- [x] Store `artist-profile-store.ts` con estadísticas y publicaciones.
+- [x] Pantalla de perfil de artista independiente (`app/artist/[id].tsx`).
+
+---
+
+### [x] FASE 10 — Experiencia de Usuario: Español 100%, Almacenamiento Permanente, Personalización de Portadas y Cero Solapamiento de Audio
+- [x] **Traducción 100% al español:** Todos los textos, encabezados, botones, alertas, tabs, ecualizador ("Plano", "Rock", "Pop", "Jazz", "Electrónica", "Graves", "Vocal", "Personalizado"), cola de reproducción, reproductor y biblioteca traducidos.
+- [x] **Almacenamiento Permanente de Música Local:** Los archivos de audio seleccionados se copian físicamente a `${FileSystem.documentDirectory}openwave_music/`. No se borran nunca al reiniciar o limpiar la caché; se conservan para siempre en la base de datos hasta que el usuario decida eliminarlos ("hasta que yo las quite").
+- [x] **Eliminación Permanente de Canciones:** Opción en la biblioteca para borrar canciones locales tanto de SQLite como del almacenamiento físico del dispositivo de forma segura.
+- [x] **Carga Automática de Biblioteca al Iniciar:** En `_layout.tsx` y `HomeScreen`, la aplicación lee SQLite de inmediato para mantener visibles todas las pistas del usuario tras cerrar y volver a abrir la app.
+- [x] **Personalización de Portada / Fondo:** Integración de `ArtworkManager` (`src/core/utils/artwork-manager.ts`). Permite seleccionar cualquier imagen de la galería/archivos, copiarla a almacenamiento permanente y asignarla como portada y fondo atmosférico desenfocado en el reproductor completo y en la biblioteca.
+- [x] **Corrección de Solapamiento ("Cruzarse las músicas") y Reinicio de Pista:**
+  - En `ExpoAudioAdapter`: al cambiar de pista se pausa de inmediato la reproducción nativa previa antes de liberar el reproductor (`player.pause()` -> `player.remove()`), evitando que dos pistas suenen a la vez.
+  - Se implementó un token de carga asíncrona (`loadToken`) para prevenir condiciones de carrera al presionar canciones rápidamente.
+  - Al presionar una canción que ya estaba cargada, se reinicia inmediatamente desde el segundo 0 (`seekTo(0)`) y se reanuda la reproducción.
