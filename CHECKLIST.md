@@ -14,7 +14,7 @@
 - [x] **FASE 2 — Motor de Reproducción Musical**
 - [x] **FASE 3 — Biblioteca Musical Local y Metadatos**
 - [x] **FASE 4 — Funciones Avanzadas (Playlists, Historial, Ecualizador)**
-- [ ] **FASE 5 — Importación y Exportación (Spotify, YouTube Music, M3U) (En curso)**
+- [x] **FASE 5 — Importación y Exportación (Spotify, YouTube Music, M3U)**
 - [ ] **FASE 6 — Música Online y Catálogos Abiertos**
 - [ ] **FASE 7 — Optimización, Pruebas en Hardware Real y Batería**
 - [ ] **FASE 8 — Distribución APK y Publicación Open Source**
@@ -86,12 +86,36 @@
 
 ---
 
-### [ ] FASE 5 — Importación y Exportación (EN PROCESO)
-- [ ] Parser de archivos JSON de biblioteca Spotify.
-- [ ] Parser de archivos CSV/JSON de Google Takeout (YouTube Music).
-- [ ] Algoritmo de similitud Levenshtein para emparejamiento con pistas locales.
-- [ ] Generador y exportador de listas en formato `.m3u8` y `.json`.
-- [ ] Pantalla de importación y resolución interactiva de coincidencias.
+### [x] FASE 5 — Importación y Exportación (Spotify, YouTube Music, M3U)
+- [x] Algoritmo de distancia Levenshtein y normalizador de texto (`src/core/utils/string-matcher.ts`).
+- [x] Clasificador de coincidencias (`EXACT`, `PROBABLE`, `PARTIAL`, `NOT_FOUND`) con tolerancia de duración.
+- [x] Parser de datos JSON de Spotify con validación Zod (`src/integrations/spotify/spotify-json-parser.ts`).
+- [x] Parser de CSV/JSON de Google Takeout YouTube Music (`src/integrations/youtube/takeout-csv-parser.ts`).
+- [x] Generador y exportador universal en formato M3U8 y JSON (`src/integrations/exporter/m3u-generator.ts`).
+- [x] Pantalla interactiva de importación y análisis de archivos (`app/importer/index.tsx`).
+- [x] Creación instantánea de playlist local a partir de coincidencias detectadas.
+- [x] Pruebas unitarias ejecutadas (25/25 pruebas pasadas en Jest).
+
+---
+
+### [ ] FASE 6 — Música Online y Catálogos Abiertos
+- [ ] Arquitectura de proveedores independientes.
+- [ ] Integración con catálogos Creative Commons / licencias abiertas.
+- [ ] Reproducción en streaming autorizada sin interferir con la biblioteca local.
+
+---
+
+### [ ] FASE 7 — Optimización y Pruebas en Hardware Real
+- [ ] Pruebas de consumo de batería y Doze Mode en Android.
+- [ ] Pruebas de estrés de memoria con bibliotecas de más de 5,000 canciones.
+- [ ] Pruebas de latencia en la interfaz con 60 FPS en listas extensas.
+
+---
+
+### [ ] FASE 8 — Distribución APK y Publicación Open Source
+- [ ] Configuración de `eas.json` para perfiles de Release y Preview.
+- [ ] Generación de APK instalable independiente.
+- [ ] Documentación de contribución, licencia MIT y publicación en GitHub.
 
 ---
 
