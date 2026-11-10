@@ -49,7 +49,7 @@ export class ExpoAudioAdapter implements IAudioEngine {
 
     try {
       // updateInterval of 250ms for smooth progress bar updates
-      this.player = createAudioPlayer(uri, 250);
+      this.player = createAudioPlayer(uri, { updateInterval: 250 });
 
       this.subscription = this.player.addListener(
         'playbackStatusUpdate',

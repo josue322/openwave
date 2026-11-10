@@ -25,7 +25,7 @@ export class MediaStoreScanner {
         mediaType: 'audio',
         first: 100,
         after: endCursor,
-        sortBy: [MediaLibrary.SortBy.creationTime],
+        sortBy: ['creationTime'],
       });
 
       if (totalAssets === 0 && response.totalCount) {
