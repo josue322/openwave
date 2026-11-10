@@ -13,8 +13,8 @@
 - [x] **FASE 1 — Configuración e Inicialización del Proyecto**
 - [x] **FASE 2 — Motor de Reproducción Musical**
 - [x] **FASE 3 — Biblioteca Musical Local y Metadatos**
-- [ ] **FASE 4 — Funciones Avanzadas (Playlists, Historial, Ecualizador)**
-- [ ] **FASE 5 — Importación y Exportación (Spotify, YouTube Music, M3U)**
+- [x] **FASE 4 — Funciones Avanzadas (Playlists, Historial, Ecualizador)**
+- [ ] **FASE 5 — Importación y Exportación (Spotify, YouTube Music, M3U) (En curso)**
 - [ ] **FASE 6 — Música Online y Catálogos Abiertos**
 - [ ] **FASE 7 — Optimización, Pruebas en Hardware Real y Batería**
 - [ ] **FASE 8 — Distribución APK y Publicación Open Source**
@@ -74,13 +74,24 @@
 
 ---
 
-### [ ] FASE 4 — Funciones Avanzadas (EN PROCESO)
-- [ ] DAO y Repositorio de Playlists (`src/data/local/playlist-dao.ts`).
-- [ ] Modal y vista de creación de Playlists manuales e inteligentes.
-- [ ] Vista de detalle de playlist con reordenamiento de canciones.
-- [ ] Pantalla del Ecualizador gráfico y preajustes (`app/equalizer/index.tsx`).
-- [ ] Vista de Cola de reproducción editable (`app/player/queue.tsx`).
-- [ ] Registro de historial de reproducción en SQLite.
+### [x] FASE 4 — Funciones Avanzadas (Playlists, Cola, Ecualizador)
+- [x] Entidad de Playlist y DAO de SQLite con soporte relacional (`src/data/local/playlist-dao.ts`).
+- [x] Store reactivo `usePlaylistStore` para creación, consulta y gestión de playlists.
+- [x] Pantalla modal de creación de playlist (`app/playlist/create.tsx`).
+- [x] Pantalla de detalle de playlist con reproducción completa y aleatoria (`app/playlist/[id].tsx`).
+- [x] Store y pantalla de Ecualizador Gráfico paramétrico de 5 bandas (`app/equalizer/index.tsx`).
+- [x] Preajustes de audio (Flat, Rock, Pop, Jazz, Electronic, Bass Boost, Vocal) y potenciador de graves.
+- [x] Vista modal de Cola de reproducción editable con eliminación de pistas (`app/player/queue.tsx`).
+- [x] Pruebas unitarias ejecutadas (17/17 pruebas pasadas en Jest).
+
+---
+
+### [ ] FASE 5 — Importación y Exportación (EN PROCESO)
+- [ ] Parser de archivos JSON de biblioteca Spotify.
+- [ ] Parser de archivos CSV/JSON de Google Takeout (YouTube Music).
+- [ ] Algoritmo de similitud Levenshtein para emparejamiento con pistas locales.
+- [ ] Generador y exportador de listas en formato `.m3u8` y `.json`.
+- [ ] Pantalla de importación y resolución interactiva de coincidencias.
 
 ---
 
