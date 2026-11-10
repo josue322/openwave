@@ -84,3 +84,4 @@ export const useArtistProfileStore = create<ArtistProfileState>((set, get) => ({
     }
   },
 }));
+

@@ -18,7 +18,7 @@
 - [x] **FASE 6 — Música Online y Catálogos Abiertos**
 - [x] **FASE 7 — Optimización, Pruebas y Tolerancia a Fallos**
 - [x] **FASE 8 — Distribución APK y Configuración de Compilación**
-- [ ] **FASE 9 — Módulo de Artistas Independientes (Futura)**
+- [x] **FASE 9 — Módulo de Artistas Independientes**
 
 ---
 
@@ -117,6 +117,14 @@
 - [x] Configuración de perfiles en `eas.json` (`preview` con `buildType: apk`).
 - [x] Guía completa de compilación local y con EAS en `docs/BUILD_GUIDE.md`.
 - [x] Scripts documentados para instalación directa en dispositivos Android vía ADB.
+
+---
+
+### [x] FASE 9 — Módulo de Artistas Independientes
+- [x] Entidad de perfil de creador `ArtistProfile` y lanzamientos `ArtistRelease` (`src/domain/entities/artist-profile.ts`).
+- [x] Store reactivo `useArtistProfileStore` con estadísticas de reproducción e insignias de verificación.
+- [x] Pantalla de perfil público de artista con discografía y reproducción directa (`app/artist/[id].tsx`).
+- [x] Pruebas unitarias de perfiles de artistas ejecutadas (30/30 pruebas pasadas en Jest).
 
 ---
 

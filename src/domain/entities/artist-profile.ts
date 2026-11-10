@@ -33,3 +33,4 @@ export interface ArtistStats {
   topTrackId?: string | null;
   topTrackTitle?: string | null;
 }
+

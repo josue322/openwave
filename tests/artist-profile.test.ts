@@ -40,3 +40,4 @@ describe('useArtistProfileStore', () => {
     expect(releases[0].id).toBe('rel_custom');
   });
 });
+
