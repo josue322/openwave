@@ -13,11 +13,12 @@ export class LocalFileImporter {
    * Opens the native Android file picker to select one or more local audio files
    * (e.g. from Downloads, Bluetooth, Music folder, WhatsApp Audio, SD Card)
    * and copies them to permanent internal app storage so they stay forever.
+   * Includes graceful fallback for Android/MIUI permissions.
    */
   public static async pickAndImportAudioFiles(): Promise<Track[]> {
     const result = await DocumentPicker.getDocumentAsync({
       type: ['audio/*'],
-      copyToCacheDirectory: true,
+      copyToCacheDirectory: false, // Prevents MIUI/Android cache sandbox read errors
       multiple: true,
     });
 
@@ -26,9 +27,13 @@ export class LocalFileImporter {
     }
 
     // Ensure permanent music directory exists
-    const dirInfo = await FileSystem.getInfoAsync(this.MUSIC_DIR);
-    if (!dirInfo.exists) {
-      await FileSystem.makeDirectoryAsync(this.MUSIC_DIR, { intermediates: true });
+    try {
+      const dirInfo = await FileSystem.getInfoAsync(this.MUSIC_DIR);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(this.MUSIC_DIR, { intermediates: true });
+      }
+    } catch (e) {
+      // Directory creation fallback
     }
 
     const newTracks: Track[] = [];
@@ -38,33 +43,36 @@ export class LocalFileImporter {
       const uniqueId = `local_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
       const safeFilename = asset.name.replace(/[^a-zA-Z0-9._-]/g, '_');
       const permanentUri = `${this.MUSIC_DIR}${uniqueId}_${safeFilename}`;
+      let finalAudioUri = asset.uri;
 
       try {
-        // Copy audio file into permanent app sandbox storage
+        // Attempt to copy audio file into permanent app sandbox storage
         await FileSystem.copyAsync({
           from: asset.uri,
           to: permanentUri,
         });
-
-        const track: Track = {
-          id: uniqueId,
-          title: cleanTitle,
-          artistName: 'Música Local',
-          albumTitle: 'Mis Descargas',
-          duration: 180000, // Initial estimate until playback engine reads actual duration
-          uri: permanentUri, // Permanent file:// URI that never expires
-          mimeType: asset.mimeType || 'audio/mpeg',
-          fileSize: asset.size,
-          dateAdded: Date.now(),
-          playCount: 0,
-          isFavorite: false,
-          sourceType: 'local',
-        };
-
-        newTracks.push(track);
+        finalAudioUri = permanentUri;
       } catch (copyErr) {
-        console.error('Error copying local audio file permanently:', copyErr);
+        console.warn('copyAsync failed for audio file, falling back to direct URI:', copyErr);
+        finalAudioUri = asset.uri;
       }
+
+      const track: Track = {
+        id: uniqueId,
+        title: cleanTitle,
+        artistName: 'Música Local',
+        albumTitle: 'Mis Descargas',
+        duration: 180000, // Initial estimate until playback engine reads actual duration
+        uri: finalAudioUri, // Permanent or content:// URI that is readable by expo-audio
+        mimeType: asset.mimeType || 'audio/mpeg',
+        fileSize: asset.size,
+        dateAdded: Date.now(),
+        playCount: 0,
+        isFavorite: false,
+        sourceType: 'local',
+      };
+
+      newTracks.push(track);
     }
 
     if (newTracks.length > 0) {
