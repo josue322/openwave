@@ -20,21 +20,19 @@ import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
 import { usePlayerStore } from '../../src/store/player-store';
 import { useLibraryStore } from '../../src/store/library-store';
+import { PlaybackService } from '../../src/playback/service/playback-service';
 
 export default function FullPlayerScreen() {
   const router = useRouter();
   const currentTrack = usePlayerStore((s) => s.currentTrack);
   const isPlaying = usePlayerStore((s) => s.isPlaying);
-  const togglePlayPause = usePlayerStore((s) => s.togglePlayPause);
-  const skipNext = usePlayerStore((s) => s.skipNext);
-  const skipPrevious = usePlayerStore((s) => s.skipPrevious);
   const shuffle = usePlayerStore((s) => s.shuffle);
-  const toggleShuffle = usePlayerStore((s) => s.toggleShuffle);
   const repeatMode = usePlayerStore((s) => s.repeatMode);
-  const cycleRepeatMode = usePlayerStore((s) => s.cycleRepeatMode);
   const positionMs = usePlayerStore((s) => s.positionMs);
   const durationMs = usePlayerStore((s) => s.durationMs);
   const toggleFavorite = useLibraryStore((s) => s.toggleFavorite);
+
+  const playbackService = PlaybackService.getInstance();
 
   if (!currentTrack) {
     return (
@@ -116,9 +114,20 @@ export default function FullPlayerScreen() {
 
       {/* Seek Bar */}
       <View style={styles.seekSection}>
-        <View style={styles.progressBarBackground}>
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={(e) => {
+            const { locationX } = e.nativeEvent;
+            // Seek bar approximation based on screen ratio
+            if (durationMs > 0) {
+              const approxRatio = Math.max(0, Math.min(1, locationX / 300));
+              playbackService.seekTo(approxRatio * durationMs);
+            }
+          }}
+          style={styles.progressBarBackground}
+        >
           <View style={[styles.progressBarFill, { width: `${progress * 100}%` }]} />
-        </View>
+        </TouchableOpacity>
         <View style={styles.timeRow}>
           <Text style={styles.timeText}>{formatTime(positionMs)}</Text>
           <Text style={styles.timeText}>{formatTime(durationMs)}</Text>
@@ -128,7 +137,7 @@ export default function FullPlayerScreen() {
       {/* Primary Controls */}
       <View style={styles.controlsSection}>
         <TouchableOpacity
-          onPress={toggleShuffle}
+          onPress={() => playbackService.toggleShuffle()}
           style={styles.auxControl}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
@@ -136,7 +145,7 @@ export default function FullPlayerScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={skipPrevious}
+          onPress={() => playbackService.skipPrevious()}
           style={styles.skipControl}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
@@ -144,7 +153,7 @@ export default function FullPlayerScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={togglePlayPause}
+          onPress={() => playbackService.togglePlayPause()}
           style={styles.playPauseButton}
           activeOpacity={0.8}
         >
@@ -156,7 +165,7 @@ export default function FullPlayerScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={skipNext}
+          onPress={() => playbackService.skipNext()}
           style={styles.skipControl}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
@@ -164,7 +173,7 @@ export default function FullPlayerScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={cycleRepeatMode}
+          onPress={() => playbackService.cycleRepeatMode()}
           style={styles.auxControl}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >

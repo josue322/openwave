@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Play, Pause, SkipForward, Music } from 'lucide-react-native';
 import { usePlayerStore } from '../../store/player-store';
+import { PlaybackService } from '../../playback/service/playback-service';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 
@@ -10,10 +11,10 @@ export const MiniPlayer: React.FC = () => {
   const router = useRouter();
   const currentTrack = usePlayerStore((s) => s.currentTrack);
   const isPlaying = usePlayerStore((s) => s.isPlaying);
-  const togglePlayPause = usePlayerStore((s) => s.togglePlayPause);
-  const skipNext = usePlayerStore((s) => s.skipNext);
   const positionMs = usePlayerStore((s) => s.positionMs);
   const durationMs = usePlayerStore((s) => s.durationMs);
+
+  const playbackService = PlaybackService.getInstance();
 
   if (!currentTrack) {
     return null;
@@ -59,7 +60,7 @@ export const MiniPlayer: React.FC = () => {
           <TouchableOpacity
             onPress={(e) => {
               e.stopPropagation();
-              togglePlayPause();
+              playbackService.togglePlayPause();
             }}
             style={styles.controlButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -74,7 +75,7 @@ export const MiniPlayer: React.FC = () => {
           <TouchableOpacity
             onPress={(e) => {
               e.stopPropagation();
-              skipNext();
+              playbackService.skipNext();
             }}
             style={styles.controlButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
