@@ -32,6 +32,14 @@ export class TrackRepository implements ITrackRepository {
     return this.trackDao.recordPlayback(trackId, positionMs);
   }
 
+  public async updateArtwork(trackId: string, artworkUri: string): Promise<void> {
+    return this.trackDao.updateArtwork(trackId, artworkUri);
+  }
+
+  public async deleteTrack(trackId: string): Promise<void> {
+    return this.trackDao.deleteTrack(trackId);
+  }
+
   public async scanAndSaveTracks(
     onProgress?: (current: number, total: number) => void
   ): Promise<Track[]> {

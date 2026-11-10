@@ -14,12 +14,12 @@ export class TrackDao {
           id, title, artist_id, album_id, duration, uri, mime_type,
           file_size, bitrate, sample_rate, codec, track_number,
           disc_number, year, genre, date_added, last_played,
-          play_count, is_favorite, source_type
+          play_count, is_favorite, source_type, artwork_uri
         ) VALUES (
           $id, $title, $artistId, $albumId, $duration, $uri, $mimeType,
           $fileSize, $bitrate, $sampleRate, $codec, $trackNumber,
           $discNumber, $year, $genre, $dateAdded, $lastPlayed,
-          $playCount, $isFavorite, $sourceType
+          $playCount, $isFavorite, $sourceType, $artworkUri
         )
       `);
 
@@ -46,6 +46,7 @@ export class TrackDao {
             $playCount: track.playCount || 0,
             $isFavorite: track.isFavorite ? 1 : 0,
             $sourceType: track.sourceType || 'local',
+            $artworkUri: track.artworkUri || null,
           });
           insertedCount++;
         }
@@ -64,7 +65,7 @@ export class TrackDao {
         t.*,
         a.name as artistName,
         al.title as albumTitle,
-        al.artwork_uri as artworkUri
+        COALESCE(t.artwork_uri, al.artwork_uri) as artworkUri
       FROM tracks t
       LEFT JOIN artists a ON t.artist_id = a.id
       LEFT JOIN albums al ON t.album_id = al.id
@@ -81,7 +82,7 @@ export class TrackDao {
         t.*,
         a.name as artistName,
         al.title as albumTitle,
-        al.artwork_uri as artworkUri
+        COALESCE(t.artwork_uri, al.artwork_uri) as artworkUri
       FROM tracks t
       LEFT JOIN artists a ON t.artist_id = a.id
       LEFT JOIN albums al ON t.album_id = al.id
@@ -101,6 +102,24 @@ export class TrackDao {
     );
   }
 
+  public async updateArtwork(trackId: string, artworkUri: string): Promise<void> {
+    const db = await getDatabase();
+    await db.runAsync(
+      'UPDATE tracks SET artwork_uri = ? WHERE id = ?',
+      artworkUri,
+      trackId
+    );
+  }
+
+  public async deleteTrack(trackId: string): Promise<void> {
+    const db = await getDatabase();
+    await db.withTransactionAsync(async () => {
+      await db.runAsync('DELETE FROM playlist_tracks WHERE track_id = ?', trackId);
+      await db.runAsync('DELETE FROM play_history WHERE track_id = ?', trackId);
+      await db.runAsync('DELETE FROM tracks WHERE id = ?', trackId);
+    });
+  }
+
   public async searchTracks(query: string): Promise<Track[]> {
     const db = await getDatabase();
     const searchTerm = `%${query.trim()}%`;
@@ -110,7 +129,7 @@ export class TrackDao {
         t.*,
         a.name as artistName,
         al.title as albumTitle,
-        al.artwork_uri as artworkUri
+        COALESCE(t.artwork_uri, al.artwork_uri) as artworkUri
       FROM tracks t
       LEFT JOIN artists a ON t.artist_id = a.id
       LEFT JOIN albums al ON t.album_id = al.id

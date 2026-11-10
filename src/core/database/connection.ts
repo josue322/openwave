@@ -43,5 +43,18 @@ async function initMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
       Date.now()
     );
   }
+
+  if (currentVersion < 2) {
+    try {
+      await db.execAsync('ALTER TABLE tracks ADD COLUMN artwork_uri TEXT;');
+    } catch (e) {
+      // Column might already exist in fresh table creations
+    }
+    await db.runAsync(
+      'INSERT INTO _migrations (version, applied_at) VALUES (?, ?)',
+      2,
+      Date.now()
+    );
+  }
 }
 

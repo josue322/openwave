@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
@@ -14,12 +14,15 @@ import {
   Play,
   Pause,
   Music,
+  Camera,
+  Image as ImageIcon,
 } from 'lucide-react-native';
 import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
 import { usePlayerStore } from '../../src/store/player-store';
 import { useLibraryStore } from '../../src/store/library-store';
 import { PlaybackService } from '../../src/playback/service/playback-service';
+import { ArtworkManager } from '../../src/core/utils/artwork-manager';
 
 export default function FullPlayerScreen() {
   const router = useRouter();
@@ -30,6 +33,21 @@ export default function FullPlayerScreen() {
   const toggleFavorite = useLibraryStore((s) => s.toggleFavorite);
 
   const playbackService = PlaybackService.getInstance();
+
+  const handlePickArtwork = async () => {
+    if (!currentTrack) return;
+    try {
+      const newUri = await ArtworkManager.pickAndSaveArtwork(currentTrack.id);
+      if (newUri) {
+        Alert.alert(
+          '¡Portada guardada!',
+          'Se ha asignado la nueva imagen de fondo y perfil para esta canción.'
+        );
+      }
+    } catch (err: any) {
+      Alert.alert('Error', err?.message || 'No se pudo seleccionar la imagen.');
+    }
+  };
 
   if (!currentTrack) {
     return (
@@ -51,8 +69,16 @@ export default function FullPlayerScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Dynamic Ambient Background Glow from Reference 2 */}
-      <View style={styles.ambientGlow} />
+      {/* Dynamic Ambient Background Glow / Blurred Cover Artwork */}
+      {currentTrack.artworkUri ? (
+        <Image
+          source={{ uri: currentTrack.artworkUri }}
+          style={styles.ambientBackgroundImage}
+          blurRadius={35}
+        />
+      ) : (
+        <View style={styles.ambientGlow} />
+      )}
 
       {/* Top Header from Reference 2 */}
       <View style={styles.topHeader}>
@@ -70,15 +96,28 @@ export default function FullPlayerScreen() {
 
       {/* Hero Circular Artwork Vignette from Reference 2 */}
       <View style={styles.artworkSection}>
-        <View style={styles.circularArtworkFrame}>
+        <TouchableOpacity
+          style={styles.circularArtworkFrame}
+          onPress={handlePickArtwork}
+          activeOpacity={0.88}
+        >
           {currentTrack.artworkUri ? (
             <Image source={{ uri: currentTrack.artworkUri }} style={styles.circularArtwork} />
           ) : (
             <View style={styles.placeholderCircular}>
               <Music color="#38BDF8" size={72} />
+              <View style={styles.addPhotoPill}>
+                <Camera color="#FFFFFF" size={14} />
+                <Text style={styles.addPhotoText}>Elegir fondo / portada</Text>
+              </View>
             </View>
           )}
-        </View>
+
+          {/* Quick Edit Overlay Indicator */}
+          <View style={styles.editBadge}>
+            <Camera color="#FFFFFF" size={13} />
+          </View>
+        </TouchableOpacity>
 
         {/* Track Title & Artist from Reference 2 */}
         <Text style={styles.trackTitle} numberOfLines={1}>
@@ -88,7 +127,7 @@ export default function FullPlayerScreen() {
           {currentTrack.artistName || 'Artista desconocido'}
         </Text>
 
-        {/* Action Pills Row (Heart, Equalizer, Queue) from Reference 2 */}
+        {/* Action Pills Row (Heart, Equalizer, Queue, Custom Cover) */}
         <View style={styles.actionPillRow}>
           <TouchableOpacity
             style={styles.actionPillButton}
@@ -116,6 +155,15 @@ export default function FullPlayerScreen() {
             activeOpacity={0.8}
           >
             <ListMusic color="#E2E8F0" size={20} />
+          </TouchableOpacity>
+
+          {/* User's requested: Choose cover / profile photo */}
+          <TouchableOpacity
+            style={styles.actionPillButton}
+            onPress={handlePickArtwork}
+            activeOpacity={0.8}
+          >
+            <ImageIcon color="#38BDF8" size={20} />
           </TouchableOpacity>
         </View>
       </View>
@@ -163,7 +211,7 @@ export default function FullPlayerScreen() {
             <Text style={styles.secondsLabel}>10</Text>
           </TouchableOpacity>
 
-          {/* Center Play/Pause Circle */}
+          {/* Center Big Play/Pause Button */}
           <TouchableOpacity
             style={styles.bigPlayButton}
             onPress={() => playbackService.togglePlayPause()}
@@ -208,9 +256,17 @@ function formatTime(ms: number): string {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0F1A', // Deep emerald/navy ambient base from Reference 2
+    backgroundColor: '#0A0F1A', // Deep base tone
     justifyContent: 'space-between',
     paddingBottom: 24,
+  },
+  ambientBackgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.28,
   },
   ambientGlow: {
     position: 'absolute',
@@ -253,8 +309,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.6,
     shadowRadius: 24,
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
     marginBottom: 26,
+    position: 'relative',
   },
   circularArtwork: {
     width: '100%',
@@ -265,6 +322,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#121826',
+    padding: 12,
+  },
+  addPhotoPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginTop: 10,
+    gap: 6,
+  },
+  addPhotoText: {
+    fontSize: 10,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  editBadge: {
+    position: 'absolute',
+    bottom: 12,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   trackTitle: {
     fontSize: 24,

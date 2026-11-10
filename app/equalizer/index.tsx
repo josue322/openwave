@@ -7,7 +7,7 @@ import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
 import {
   useEqualizerStore,
-  EQUALIZER_PRESETS,
+  SPANISH_PRESETS,
   EqualizerPresetName,
 } from '../../src/store/equalizer-store';
 
@@ -22,7 +22,7 @@ export default function EqualizerScreen() {
   const bassBoost = useEqualizerStore((s) => s.bassBoost);
   const setBassBoost = useEqualizerStore((s) => s.setBassBoost);
 
-  const presetNames = Object.keys(EQUALIZER_PRESETS) as EqualizerPresetName[];
+  const presetNames = SPANISH_PRESETS;
 
   return (
     <SafeAreaView style={styles.container}>

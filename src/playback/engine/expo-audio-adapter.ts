@@ -16,6 +16,7 @@ export class ExpoAudioAdapter implements IAudioEngine {
   private listeners: Set<PlaybackStatusListener> = new Set();
   private isConfigured: boolean = false;
   private subscription: { remove: () => void } | null = null;
+  private loadToken: number = 0;
 
   private async configureAudioMode(): Promise<void> {
     if (this.isConfigured) return;
@@ -33,35 +34,67 @@ export class ExpoAudioAdapter implements IAudioEngine {
   }
 
   public async load(uri: string, shouldPlayImmediately: boolean = false): Promise<void> {
+    const token = ++this.loadToken;
     await this.configureAudioMode();
 
+    // If the SAME track is already loaded, restart it from 0 ("al presionar la musica tiene que reiniciar")
     if (this.player && this.currentUri === uri) {
-      if (shouldPlayImmediately) {
-        this.player.play();
+      try {
+        await this.player.seekTo(0);
+        this.emitStatus({
+          isLoaded: true,
+          isPlaying: shouldPlayImmediately,
+          positionMs: 0,
+          durationMs: this.player.duration ? Math.round(this.player.duration * 1000) : 0,
+          isBuffering: false,
+          didJustFinish: false,
+        });
+        if (shouldPlayImmediately) {
+          this.player.play();
+        }
+      } catch (e) {
+        console.warn('Error restarting current track:', e);
       }
       return;
     }
 
-    // Clean up previous subscription and player
+    // Immediately stop and destroy previous player so tracks NEVER overlap ("evitar cruzarse las musicas")
     this.cleanupCurrentPlayer();
+
+    if (token !== this.loadToken) {
+      return; // A newer load was initiated
+    }
 
     this.currentUri = uri;
 
     try {
-      // updateInterval of 250ms for smooth progress bar updates
-      this.player = createAudioPlayer(uri, { updateInterval: 250 });
+      // Create new audio player with 250ms updateInterval
+      const newPlayer = createAudioPlayer(uri, { updateInterval: 250 });
+
+      if (token !== this.loadToken) {
+        // Obsolete player created during fast clicking
+        try {
+          newPlayer.pause();
+          newPlayer.remove();
+        } catch (e) {}
+        return;
+      }
+
+      this.player = newPlayer;
 
       this.subscription = this.player.addListener(
         'playbackStatusUpdate',
         (status: AudioStatus) => {
-          this.emitStatus({
-            isLoaded: status.isLoaded,
-            isPlaying: status.playing,
-            positionMs: Math.round(status.currentTime * 1000),
-            durationMs: Math.round(status.duration * 1000),
-            isBuffering: status.isBuffering,
-            didJustFinish: status.didJustFinish,
-          });
+          if (token === this.loadToken) {
+            this.emitStatus({
+              isLoaded: status.isLoaded,
+              isPlaying: status.playing,
+              positionMs: Math.round(status.currentTime * 1000),
+              durationMs: Math.round(status.duration * 1000),
+              isBuffering: status.isBuffering,
+              didJustFinish: status.didJustFinish,
+            });
+          }
         }
       );
 
@@ -69,15 +102,17 @@ export class ExpoAudioAdapter implements IAudioEngine {
         this.player.play();
       }
     } catch (err: any) {
-      this.emitStatus({
-        isLoaded: false,
-        isPlaying: false,
-        positionMs: 0,
-        durationMs: 0,
-        isBuffering: false,
-        didJustFinish: false,
-        error: err?.message || 'Error cargando archivo de audio',
-      });
+      if (token === this.loadToken) {
+        this.emitStatus({
+          isLoaded: false,
+          isPlaying: false,
+          positionMs: 0,
+          durationMs: 0,
+          isBuffering: false,
+          didJustFinish: false,
+          error: err?.message || 'Error cargando archivo de audio',
+        });
+      }
       throw err;
     }
   }
@@ -96,8 +131,10 @@ export class ExpoAudioAdapter implements IAudioEngine {
 
   public async stop(): Promise<void> {
     if (!this.player) return;
-    this.player.pause();
-    await this.player.seekTo(0);
+    try {
+      this.player.pause();
+      await this.player.seekTo(0);
+    } catch (e) {}
   }
 
   public async seekTo(positionMs: number): Promise<void> {
@@ -130,15 +167,19 @@ export class ExpoAudioAdapter implements IAudioEngine {
 
   private cleanupCurrentPlayer(): void {
     if (this.subscription) {
-      this.subscription.remove();
+      try {
+        this.subscription.remove();
+      } catch (e) {}
       this.subscription = null;
     }
     if (this.player) {
       try {
+        // Crucial: explicitly pause native audio player before removal to stop background sound
+        this.player.pause();
+      } catch (e) {}
+      try {
         this.player.remove();
-      } catch (e) {
-        // Ignored if already removed
-      }
+      } catch (e) {}
       this.player = null;
     }
   }

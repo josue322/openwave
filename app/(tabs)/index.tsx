@@ -23,6 +23,7 @@ import { useLibraryStore } from '../../src/store/library-store';
 import { usePlayerStore } from '../../src/store/player-store';
 import { PlaybackService } from '../../src/playback/service/playback-service';
 import { LocalFileImporter } from '../../src/core/utils/local-file-importer';
+import { TrackDao } from '../../src/data/local/track-dao';
 import { DEMO_TRACKS, loadDemoTracksIntoLibrary } from '../../src/core/utils/sample-data';
 import { Track } from '../../src/domain/entities/track';
 
@@ -32,10 +33,20 @@ export default function HomeScreen() {
   const playbackService = PlaybackService.getInstance();
 
   useEffect(() => {
-    // If library is totally empty on first launch, offer or auto-load demo tracks
-    if (tracks.length === 0) {
-      loadDemoTracksIntoLibrary().catch(console.error);
+    async function loadLibraryIfNeeded() {
+      if (tracks.length === 0) {
+        const trackDao = new TrackDao();
+        const all = await trackDao.getAllTracks();
+        if (all.length > 0) {
+          const favs = await trackDao.getFavorites();
+          useLibraryStore.getState().setTracks(all);
+          useLibraryStore.getState().setFavorites(favs);
+        } else {
+          await loadDemoTracksIntoLibrary();
+        }
+      }
     }
+    loadLibraryIfNeeded();
   }, []);
 
   const handlePickLocalMusic = async () => {
@@ -100,7 +111,7 @@ export default function HomeScreen() {
             activeOpacity={0.8}
           >
             <Music2 color="#A5B4FC" size={18} />
-            <Text style={styles.mixText}>Track mix</Text>
+            <Text style={styles.mixText}>Mix de canciones</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -109,7 +120,7 @@ export default function HomeScreen() {
             activeOpacity={0.8}
           >
             <Disc color="#A5B4FC" size={18} />
-            <Text style={styles.mixText}>Album mix</Text>
+            <Text style={styles.mixText}>Mix de álbumes</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -118,7 +129,7 @@ export default function HomeScreen() {
             activeOpacity={0.8}
           >
             <Calendar color="#A5B4FC" size={18} />
-            <Text style={styles.mixText}>Decade mix</Text>
+            <Text style={styles.mixText}>Mix por décadas</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -127,7 +138,7 @@ export default function HomeScreen() {
             activeOpacity={0.8}
           >
             <ListMusic color="#A5B4FC" size={18} />
-            <Text style={styles.mixText}>Queues</Text>
+            <Text style={styles.mixText}>Cola de pistas</Text>
           </TouchableOpacity>
 
           {/* User's requested: Upload / Pick Local Music */}
@@ -148,13 +159,13 @@ export default function HomeScreen() {
             activeOpacity={0.8}
           >
             <Radio color="#A5B4FC" size={18} />
-            <Text style={styles.mixText}>Internet radios</Text>
+            <Text style={styles.mixText}>Radios online</Text>
           </TouchableOpacity>
         </View>
 
-        {/* MOST PLAYED ALBUMS Section from Reference 1 */}
+        {/* ÁLBUMES MÁS ESCUCHADOS Section from Reference 1 */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>MOST PLAYED ALBUMS</Text>
+          <Text style={styles.sectionTitle}>ÁLBUMES MÁS ESCUCHADOS</Text>
           <TouchableOpacity onPress={() => router.push('/(tabs)/library' as any)}>
             <ChevronRight color={colors.textSecondary} size={20} />
           </TouchableOpacity>
@@ -191,9 +202,9 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        {/* RECENTLY ADDED ALBUMS Section from Reference 1 */}
+        {/* AÑADIDOS RECIENTEMENTE Section from Reference 1 */}
         <View style={[styles.sectionHeader, { marginTop: 28 }]}>
-          <Text style={styles.sectionTitle}>RECENTLY ADDED ALBUMS</Text>
+          <Text style={styles.sectionTitle}>AÑADIDOS RECIENTEMENTE</Text>
           <TouchableOpacity onPress={() => router.push('/(tabs)/library' as any)}>
             <ChevronRight color={colors.textSecondary} size={20} />
           </TouchableOpacity>
@@ -223,7 +234,7 @@ export default function HomeScreen() {
                 {item.albumTitle || item.title}
               </Text>
               <Text style={styles.recentArtist} numberOfLines={1}>
-                {item.artistName || 'OpenWave Collection'}
+                {item.artistName || 'Colección OpenWave'}
               </Text>
             </View>
           ))}

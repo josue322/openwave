@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Music, RefreshCw, Heart, FolderPlus, Play, Disc } from 'lucide-react-native';
+import { Music, RefreshCw, Heart, FolderPlus, Play, Disc, MoreVertical, Image as ImageIcon, Trash2 } from 'lucide-react-native';
 import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
 import { useLibraryStore } from '../../src/store/library-store';
@@ -9,6 +9,7 @@ import { Track } from '../../src/domain/entities/track';
 import { TrackRepository } from '../../src/data/repositories/track-repository';
 import { PlaybackService } from '../../src/playback/service/playback-service';
 import { LocalFileImporter } from '../../src/core/utils/local-file-importer';
+import { ArtworkManager } from '../../src/core/utils/artwork-manager';
 
 type Tab = 'songs' | 'albums' | 'artists' | 'favorites';
 
@@ -81,12 +82,61 @@ export default function LibraryScreen() {
     }
   };
 
+  const handleTrackOptions = (track: Track) => {
+    Alert.alert(
+      track.title,
+      `${track.artistName || 'Música local'} • Opciones de la pista:`,
+      [
+        {
+          text: 'Cambiar portada / imagen',
+          onPress: async () => {
+            try {
+              const uri = await ArtworkManager.pickAndSaveArtwork(track.id);
+              if (uri) {
+                Alert.alert('¡Listo!', 'Portada personalizada guardada correctamente.');
+              }
+            } catch (err: any) {
+              Alert.alert('Error', err?.message || 'No se pudo guardar la imagen.');
+            }
+          },
+        },
+        {
+          text: 'Eliminar canción',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Eliminar canción',
+              `¿Deseas quitar permanentemente "${track.title}" de OpenWave?`,
+              [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                  text: 'Eliminar',
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      await LocalFileImporter.deleteTrackPermanently(track);
+                      Alert.alert('Eliminada', 'La canción ha sido removida.');
+                    } catch (err: any) {
+                      Alert.alert('Error', err?.message || 'No se pudo eliminar.');
+                    }
+                  },
+                },
+              ]
+            );
+          },
+        },
+        { text: 'Cancelar', style: 'cancel' },
+      ]
+    );
+  };
+
   const displayTracks = activeTab === 'favorites' ? favorites : tracks;
 
   const renderTrackItem = ({ item, index }: { item: Track; index: number }) => (
     <TouchableOpacity
       style={styles.trackRow}
       onPress={() => playbackService.playTrack(item, displayTracks, index)}
+      onLongPress={() => handleTrackOptions(item)}
       activeOpacity={0.7}
     >
       <View style={styles.trackIconContainer}>
@@ -114,6 +164,13 @@ export default function LibraryScreen() {
           size={20}
           fill={item.isFavorite ? colors.error : 'transparent'}
         />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => handleTrackOptions(item)}
+        style={styles.optionsButton}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        <MoreVertical color={colors.textMuted} size={18} />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -365,6 +422,10 @@ const styles = StyleSheet.create({
   },
   favButton: {
     padding: 6,
+  },
+  optionsButton: {
+    padding: 6,
+    marginLeft: 4,
   },
   emptyState: {
     flex: 1,

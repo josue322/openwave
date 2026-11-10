@@ -14,7 +14,7 @@ interface PlayerState {
   volume: number;
 
   // Actions
-  setTrack: (track: Track) => void;
+  setTrack: (track: Track | null) => void;
   setIsPlaying: (isPlaying: boolean) => void;
   setPosition: (positionMs: number) => void;
   setDuration: (durationMs: number) => void;
@@ -39,7 +39,12 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   repeatMode: 'off',
   volume: 1.0,
 
-  setTrack: (track) => set({ currentTrack: track, positionMs: 0, durationMs: track.duration }),
+  setTrack: (track) =>
+    set({
+      currentTrack: track,
+      positionMs: 0,
+      durationMs: track ? track.duration : 0,
+    }),
   setIsPlaying: (isPlaying) => set({ isPlaying }),
   setPosition: (positionMs) => set({ positionMs }),
   setDuration: (durationMs) => set({ durationMs }),

@@ -78,6 +78,7 @@ export class PlaybackService {
     const store = usePlayerStore.getState();
 
     store.setTrack(current);
+    store.setPosition(0);
     store.setQueue(this.queueManager.getQueue(), this.queueManager.getCurrentIndex());
 
     try {

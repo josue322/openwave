@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS tracks (
     album_id TEXT,
     duration INTEGER NOT NULL,
     uri TEXT NOT NULL UNIQUE,
+    artwork_uri TEXT,
     mime_type TEXT,
     file_size INTEGER,
     bitrate INTEGER,

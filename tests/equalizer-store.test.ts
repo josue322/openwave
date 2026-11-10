@@ -26,13 +26,13 @@ describe('useEqualizerStore', () => {
     expect(state.bands[4].gain).toBe(EQUALIZER_PRESETS.Rock[4]);
   });
 
-  test('setBandGain adjusts specific frequency band and changes preset to Custom', () => {
-    useEqualizerStore.getState().applyPreset('Flat');
+  test('setBandGain adjusts specific frequency band and changes preset to Personalizado', () => {
+    useEqualizerStore.getState().applyPreset('Plano');
     useEqualizerStore.getState().setBandGain(0, 6);
 
     const state = useEqualizerStore.getState();
     expect(state.bands[0].gain).toBe(6);
-    expect(state.selectedPreset).toBe('Custom');
+    expect(state.selectedPreset).toBe('Personalizado');
   });
 
   test('setBandGain clamps gains within -10dB to +10dB', () => {
