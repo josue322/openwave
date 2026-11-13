@@ -1,70 +1,102 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Tabs } from 'expo-router';
-import { Home, ListMusic, Music, Disc3, Settings } from 'lucide-react-native';
-import { colors } from '../../src/theme/colors';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Home, ListMusic, Search, Settings } from 'lucide-react-native';
 import { MiniPlayer } from '../../src/components/player/MiniPlayer';
+import { useThemeColors } from '../../src/theme/theme-hook';
+import { useTranslation } from '../../src/core/i18n/translations';
 
 export default function TabsLayout() {
+  const palette = useThemeColors();
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, 10);
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: palette.background }]}>
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarStyle: styles.tabBar,
-          tabBarShowLabel: false, // Icon-only sleek bottom bar like Reference 1
-          tabBarActiveTintColor: '#FFFFFF',
-          tabBarInactiveTintColor: '#64748B',
+        }}
+        tabBar={({ state, emitter, navigateToTab }) => {
+          const tabBg = palette.mode === 'light' ? '#FFFFFF' : '#0D111C';
+          const activeCapsuleBg = palette.mode === 'light' ? '#E0F2FE' : '#2D3A56';
+          const activeColor = palette.mode === 'light' ? palette.primary : '#FFFFFF';
+
+          return (
+            <View
+              style={[
+                styles.bottomDock,
+                {
+                  backgroundColor: tabBg,
+                  borderTopColor: palette.border,
+                  paddingBottom: bottomInset,
+                },
+              ]}
+            >
+              <MiniPlayer />
+
+              <View style={styles.tabBarRow}>
+                {state.routes.map((route, index) => {
+                  const focused = state.index === index;
+                  const iconColor = focused ? activeColor : palette.textMuted;
+
+                  const onPress = () => {
+                    const event = emitter.emit({
+                      type: 'tabPress',
+                      target: route.key,
+                      canPreventDefault: true,
+                    });
+                    if (!focused && !event.defaultPrevented) {
+                      navigateToTab(route.key);
+                    }
+                  };
+
+                  const renderIcon = () => {
+                    switch (route.name) {
+                      case 'index':
+                        return <Home color={iconColor} size={22} fill={focused ? iconColor : 'transparent'} />;
+                      case 'library':
+                        return <ListMusic color={iconColor} size={22} />;
+                      case 'search':
+                        return <Search color={iconColor} size={22} />;
+                      case 'settings':
+                      default:
+                        return <Settings color={iconColor} size={22} />;
+                    }
+                  };
+
+                  return (
+                    <TouchableOpacity
+                      key={route.key}
+                      accessibilityRole="button"
+                      accessibilityState={focused ? { selected: true } : {}}
+                      onPress={onPress}
+                      activeOpacity={0.8}
+                      style={styles.tabItemButton}
+                    >
+                      <View
+                        style={[
+                          styles.iconWrapper,
+                          focused && [styles.activeCapsule, { backgroundColor: activeCapsuleBg }],
+                        ]}
+                      >
+                        {renderIcon()}
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+          );
         }}
       >
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: 'Inicio',
-            tabBarIcon: ({ color, focused }) => (
-              <View style={[styles.iconWrapper, focused && styles.activeCapsule]}>
-                <Home color={color} size={22} fill={focused ? color : 'transparent'} />
-              </View>
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="library"
-          options={{
-            title: 'Biblioteca',
-            tabBarIcon: ({ color, focused }) => (
-              <View style={[styles.iconWrapper, focused && styles.activeCapsule]}>
-                <ListMusic color={color} size={22} />
-              </View>
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="search"
-          options={{
-            title: 'Explorar',
-            tabBarIcon: ({ color, focused }) => (
-              <View style={[styles.iconWrapper, focused && styles.activeCapsule]}>
-                <Music color={color} size={22} />
-              </View>
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: 'Ajustes',
-            tabBarIcon: ({ color, focused }) => (
-              <View style={[styles.iconWrapper, focused && styles.activeCapsule]}>
-                <Settings color={color} size={22} />
-              </View>
-            ),
-          }}
-        />
+        <Tabs.Screen name="index" options={{ title: t.tabs.home }} />
+        <Tabs.Screen name="library" options={{ title: t.tabs.library }} />
+        <Tabs.Screen name="search" options={{ title: t.tabs.search }} />
+        <Tabs.Screen name="settings" options={{ title: t.tabs.settings }} />
       </Tabs>
-
-      {/* Floating Mini Player from Reference 1 */}
-      <MiniPlayer />
     </View>
   );
 }
@@ -72,27 +104,33 @@ export default function TabsLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#090C15',
   },
-  tabBar: {
-    backgroundColor: '#0D111C', // Dark navy bar matching Reference 1
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+  bottomDock: {
     borderTopWidth: 1,
-    height: 64,
-    paddingTop: 8,
-    paddingBottom: 8,
-    elevation: 12,
+    elevation: 14,
+  },
+  tabBarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    height: 56,
+    paddingHorizontal: 8,
+  },
+  tabItemButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
   },
   iconWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
     width: 48,
-    height: 38,
-    borderRadius: 19,
+    height: 36,
+    borderRadius: 18,
   },
   activeCapsule: {
-    backgroundColor: '#2D3A56', // Active rounded capsule as in Reference 1
-    width: 52,
-    height: 38,
+    width: 54,
+    height: 36,
   },
 });

@@ -8,13 +8,29 @@ export interface PlaybackStatus {
   error?: string | null;
 }
 
+export interface AudioTrackMetadata {
+  title?: string;
+  artist?: string;
+  albumTitle?: string;
+  artworkUrl?: string;
+}
+
 export type PlaybackStatusListener = (status: PlaybackStatus) => void;
 
 export interface IAudioEngine {
   /**
    * Loads an audio track from a local file URI or remote URL.
    */
-  load(uri: string, shouldPlayImmediately?: boolean): Promise<void>;
+  load(
+    uri: string,
+    shouldPlayImmediately?: boolean,
+    metadata?: AudioTrackMetadata
+  ): Promise<void>;
+
+  /**
+   * Updates the OS lock screen / notification metadata if active.
+   */
+  updateMetadata?(metadata: AudioTrackMetadata): void;
 
   /**
    * Starts or resumes playback.
@@ -45,6 +61,11 @@ export interface IAudioEngine {
    * Sets the playback rate/speed (e.g. 1.0 = normal, 1.25, 1.5, etc.).
    */
   setPlaybackSpeed(speed: number): Promise<void>;
+
+  /**
+   * Preloads an audio URI into the engine cache for near-instant gapless transition.
+   */
+  preloadTrack?(uri: string): Promise<void>;
 
   /**
    * Releases resources, unloading the current audio asset from memory.

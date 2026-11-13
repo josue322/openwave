@@ -1,0 +1,89 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="expo.modules.openwavenative" >
+4
+5    <uses-sdk android:minSdkVersion="24" />
+5-->INJECTED
+5-->INJECTED
+6
+7    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+7-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:3:3-75
+7-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:3:20-72
+8    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+8-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:4:3-90
+8-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:4:20-87
+9    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+9-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:5:3-78
+9-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:5:20-75
+10    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+10-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:6:3-74
+10-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:6:20-71
+11
+12    <application>
+12-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:8:3-41:17
+13        <meta-data
+13-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:9:5-11:53
+14            android:name="com.google.android.gms.car.application"
+14-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:10:7-60
+15            android:resource="@xml/automotive_app_desc" />
+15-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:11:7-50
+16        <meta-data
+16-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:13:5-15:81
+17            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+17-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:14:7-87
+18            android:value="expo.modules.openwavenative.OpenWaveCastOptionsProvider" />
+18-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:15:7-78
+19
+20        <service
+20-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:17:5-25:15
+21            android:name="expo.modules.openwavenative.OpenWaveMediaService"
+21-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:18:7-43
+22            android:exported="true"
+22-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:19:7-30
+23            android:foregroundServiceType="mediaPlayback" >
+23-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:20:7-52
+24            <intent-filter>
+24-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:21:7-24:23
+25                <action android:name="androidx.media3.session.MediaLibraryService" />
+25-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:22:9-78
+25-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:22:17-75
+26                <action android:name="android.media.browse.MediaBrowserService" />
+26-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:23:9-75
+26-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:23:17-72
+27            </intent-filter>
+28        </service>
+29
+30        <receiver
+30-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:27:5-40:16
+31            android:name="expo.modules.openwavenative.OpenWaveWidgetProvider"
+31-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:28:7-45
+32            android:exported="true"
+32-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:29:7-30
+33            android:label="OpenWave Player" >
+33-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:30:7-38
+34            <intent-filter>
+34-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:31:7-36:23
+35                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+35-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:32:9-76
+35-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:32:17-73
+36                <action android:name="expo.modules.openwavenative.WIDGET_ACTION_PREV" />
+36-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:33:9-81
+36-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:33:17-78
+37                <action android:name="expo.modules.openwavenative.WIDGET_ACTION_PLAY_PAUSE" />
+37-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:34:9-87
+37-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:34:17-84
+38                <action android:name="expo.modules.openwavenative.WIDGET_ACTION_NEXT" />
+38-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:35:9-81
+38-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:35:17-78
+39            </intent-filter>
+40
+41            <meta-data
+41-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:37:7-39:56
+42                android:name="android.appwidget.provider"
+42-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:38:9-50
+43                android:resource="@xml/openwave_widget_info" />
+43-->C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android\src\main\AndroidManifest.xml:39:9-53
+44        </receiver>
+45    </application>
+46
+47</manifest>

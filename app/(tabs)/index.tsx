@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
   SlidersHorizontal,
-  Cast,
+  History,
   Search,
   Music2,
   Disc,
@@ -14,39 +14,48 @@ import {
   Radio,
   Play,
   ChevronRight,
-  PlusCircle,
+  Heart,
 } from 'lucide-react-native';
 import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
 import { WaveLogo } from '../../src/components/common/WaveLogo';
+import { LibrarySkeletonList } from '../../src/components/common/SkeletonLoader';
+import { useThemeColors } from '../../src/theme/theme-hook';
+import { useTranslation } from '../../src/core/i18n/translations';
 import { useLibraryStore } from '../../src/store/library-store';
-import { usePlayerStore } from '../../src/store/player-store';
 import { PlaybackService } from '../../src/playback/service/playback-service';
 import { LocalFileImporter } from '../../src/core/utils/local-file-importer';
 import { TrackDao } from '../../src/data/local/track-dao';
-import { DEMO_TRACKS, loadDemoTracksIntoLibrary } from '../../src/core/utils/sample-data';
 import { Track } from '../../src/domain/entities/track';
+import { CastButton } from '../../src/components/player/CastButton';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const palette = useThemeColors();
+  const { t } = useTranslation();
+  const [isInitialLoading, setIsInitialLoading] = useState(false);
   const tracks = useLibraryStore((s) => s.tracks);
+  const favorites = useLibraryStore((s) => s.favorites);
   const playbackService = PlaybackService.getInstance();
 
   useEffect(() => {
     async function loadLibraryIfNeeded() {
       if (tracks.length === 0) {
-        const trackDao = new TrackDao();
-        const all = await trackDao.getAllTracks();
-        if (all.length > 0) {
-          const favs = await trackDao.getFavorites();
-          useLibraryStore.getState().setTracks(all);
-          useLibraryStore.getState().setFavorites(favs);
-        } else {
-          await loadDemoTracksIntoLibrary();
+        setIsInitialLoading(true);
+        try {
+          const trackDao = new TrackDao();
+          const all = await trackDao.getAllTracks();
+          if (all.length > 0) {
+            const favs = await trackDao.getFavorites();
+            useLibraryStore.getState().setTracks(all);
+            useLibraryStore.getState().setFavorites(favs);
+          }
+        } finally {
+          setIsInitialLoading(false);
         }
       }
     }
-    loadLibraryIfNeeded();
+    loadLibraryIfNeeded().catch(() => {});
   }, []);
 
   const handlePickLocalMusic = async () => {
@@ -67,69 +76,124 @@ export default function HomeScreen() {
     playbackService.playTrack(track, list, index);
   };
 
-  // Group or sample albums
-  const displayAlbums = tracks.slice(0, 8);
-  const recentAlbums = tracks.slice(0, 4);
+  const handlePlayTrackMix = () => {
+    if (tracks.length === 0) {
+      router.push('/(tabs)/library' as any);
+      return;
+    }
+    const shuffled = [...tracks].sort(() => Math.random() - 0.5);
+    playbackService.playTrack(shuffled[0], shuffled, 0);
+  };
+
+  // Orden real: Más escuchadas (playCount DESC) y Añadidas recientemente (dateAdded DESC)
+  const displayAlbums = [...tracks]
+    .sort((a, b) => (b.playCount || 0) - (a.playCount || 0))
+    .slice(0, 8);
+  const recentAlbums = [...tracks]
+    .sort((a, b) => (b.dateAdded || 0) - (a.dateAdded || 0))
+    .slice(0, 8);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: palette.background }]} edges={['top']}>
       {/* Top Bar matching Reference 1 */}
       <View style={styles.topBar}>
         <View style={styles.logoRow}>
           <WaveLogo size={30} />
-          <Text style={styles.brandTitle}>OPENWAVE</Text>
+          <Text style={[styles.brandTitle, { color: palette.textPrimary }]}>OPENWAVE</Text>
         </View>
 
-        <View style={styles.headerActionPill}>
-          <TouchableOpacity
-            style={styles.headerIconButton}
-            onPress={() => router.push('/(tabs)/library' as any)}
-          >
-            <SlidersHorizontal color="#FFFFFF" size={18} />
-          </TouchableOpacity>
+        <View style={[styles.headerActionPill, { backgroundColor: palette.surfaceElevated }]}>
           <TouchableOpacity
             style={styles.headerIconButton}
             onPress={() => router.push('/equalizer' as any)}
           >
-            <Cast color="#FFFFFF" size={18} />
+            <SlidersHorizontal color={palette.textPrimary} size={18} />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.headerIconButton}
+            onPress={() => router.push('/stats' as any)}
+          >
+            <History color={palette.textPrimary} size={18} />
+          </TouchableOpacity>
+          <CastButton
+            size={18}
+            color={palette.textPrimary}
+            buttonStyle={styles.headerIconButton}
+          />
           <TouchableOpacity
             style={styles.headerIconButton}
             onPress={() => router.push('/(tabs)/search' as any)}
           >
-            <Search color="#FFFFFF" size={18} />
+            <Search color={palette.textPrimary} size={18} />
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      {isInitialLoading && tracks.length === 0 ? (
+        <LibrarySkeletonList rows={6} />
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Quick Action Capsules (2 Columns) from Reference 1 */}
         <View style={styles.mixesGrid}>
           <TouchableOpacity
-            style={styles.mixCapsule}
-            onPress={() => router.push('/(tabs)/library' as any)}
+            style={[styles.mixCapsule, styles.favoriteMixCapsule]}
+            onPress={() =>
+              router.push({
+                pathname: '/(tabs)/library',
+                params: { tab: 'favorites' },
+              } as any)
+            }
             activeOpacity={0.8}
           >
-            <Music2 color="#A5B4FC" size={18} />
-            <Text style={styles.mixText}>Mix de canciones</Text>
+            <Heart color="#EF4444" size={17} fill="#EF4444" />
+            <Text style={[styles.mixText, { color: '#FCA5A5', fontWeight: '700' }]} numberOfLines={1}>
+              {favorites.length > 0 ? `Favoritos (${favorites.length})` : 'Favoritos'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.mixCapsule, { backgroundColor: palette.surface, borderColor: palette.border }]}
+            onPress={handlePlayTrackMix}
+            activeOpacity={0.8}
+          >
+            <Music2 color={palette.primary} size={17} />
+            <Text style={[styles.mixText, { color: palette.textPrimary }]} numberOfLines={1}>
+              {t.home.trackMix}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.mixCapsule}
-            onPress={() => router.push('/(tabs)/library' as any)}
+            onPress={() => {
+              if (tracks.length === 0) {
+                router.push('/(tabs)/library' as any);
+                return;
+              }
+              const byAlbum = [...tracks].sort((a, b) =>
+                (a.albumTitle || '').localeCompare(b.albumTitle || '')
+              );
+              playbackService.playTrack(byAlbum[0], byAlbum, 0);
+            }}
             activeOpacity={0.8}
           >
-            <Disc color="#A5B4FC" size={18} />
-            <Text style={styles.mixText}>Mix de álbumes</Text>
+            <Disc color="#A5B4FC" size={17} />
+            <Text style={styles.mixText} numberOfLines={1}>Mix de álbumes</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.mixCapsule}
-            onPress={() => router.push('/(tabs)/library' as any)}
+            onPress={() => {
+              if (tracks.length === 0) {
+                router.push('/(tabs)/library' as any);
+                return;
+              }
+              const byYear = [...tracks].sort((a, b) => (b.year || 0) - (a.year || 0));
+              playbackService.playTrack(byYear[0], byYear, 0);
+            }}
             activeOpacity={0.8}
           >
-            <Calendar color="#A5B4FC" size={18} />
-            <Text style={styles.mixText}>Mix por décadas</Text>
+            <Calendar color="#A5B4FC" size={17} />
+            <Text style={styles.mixText} numberOfLines={1}>Mix por décadas</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -137,8 +201,17 @@ export default function HomeScreen() {
             onPress={() => router.push('/player/queue' as any)}
             activeOpacity={0.8}
           >
-            <ListMusic color="#A5B4FC" size={18} />
-            <Text style={styles.mixText}>Cola de pistas</Text>
+            <ListMusic color="#A5B4FC" size={17} />
+            <Text style={styles.mixText} numberOfLines={1}>Cola de pistas</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.mixCapsule}
+            onPress={() => router.push('/importer' as any)}
+            activeOpacity={0.8}
+          >
+            <FolderPlus color="#A5B4FC" size={17} />
+            <Text style={styles.mixText} numberOfLines={1}>Importar CSV / Listas</Text>
           </TouchableOpacity>
 
           {/* User's requested: Upload / Pick Local Music */}
@@ -147,19 +220,19 @@ export default function HomeScreen() {
             onPress={handlePickLocalMusic}
             activeOpacity={0.8}
           >
-            <FolderPlus color={colors.primary} size={18} />
-            <Text style={[styles.mixText, { color: colors.primary, fontWeight: '700' }]}>
+            <FolderPlus color={colors.primary} size={17} />
+            <Text style={[styles.mixText, { color: colors.primary, fontWeight: '700' }]} numberOfLines={1}>
               Subir Música Local
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.mixCapsule}
-            onPress={() => loadDemoTracksIntoLibrary()}
+            onPress={() => router.push('/explore' as any)}
             activeOpacity={0.8}
           >
-            <Radio color="#A5B4FC" size={18} />
-            <Text style={styles.mixText}>Radios online</Text>
+            <Radio color="#A5B4FC" size={17} />
+            <Text style={styles.mixText} numberOfLines={1}>Explorar Online</Text>
           </TouchableOpacity>
         </View>
 
@@ -240,6 +313,7 @@ export default function HomeScreen() {
           ))}
         </ScrollView>
       </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -254,62 +328,69 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
   logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
   },
   brandTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
     color: '#FFFFFF',
-    letterSpacing: 1.5,
+    letterSpacing: 1.4,
   },
   headerActionPill: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#161C2C', // Rounded pill container from Reference 1
-    borderRadius: 24,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    gap: 16,
+    borderRadius: 22,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    gap: 12,
   },
   headerIconButton: {
-    padding: 2,
+    padding: 3,
   },
   scrollContent: {
     paddingHorizontal: 16,
-    paddingBottom: 40,
+    paddingTop: 6,
+    paddingBottom: 24,
   },
   mixesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
-    marginTop: 10,
-    marginBottom: 26,
+    justifyContent: 'space-between',
+    rowGap: 10,
+    marginTop: 4,
+    marginBottom: 22,
   },
   mixCapsule: {
-    width: '48.3%',
+    width: '48.2%',
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#141A28',
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    gap: 10,
+    borderRadius: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    gap: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.04)',
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   highlightMixCapsule: {
     backgroundColor: 'rgba(0, 229, 255, 0.08)',
     borderColor: 'rgba(0, 229, 255, 0.25)',
   },
+  favoriteMixCapsule: {
+    backgroundColor: 'rgba(239, 68, 68, 0.09)',
+    borderColor: 'rgba(239, 68, 68, 0.28)',
+  },
   mixText: {
     ...typography.caption,
     color: '#D1D5DB',
     fontWeight: '600',
+    flex: 1,
   },
   sectionHeader: {
     flexDirection: 'row',

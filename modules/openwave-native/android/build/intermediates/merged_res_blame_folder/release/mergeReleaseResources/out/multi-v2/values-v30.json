@@ -1,0 +1,34 @@
+{
+    "logs": [
+        {
+            "outputFile": "expo.modules.openwavenative.openwave-native-release-56:/values-v30/values-v30.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\josue\\.gradle\\caches\\9.4.1\\transforms\\ea9398ac5f7799a5913d013cd36b4cf4\\transformed\\material3-release\\res\\values-v30\\values-v30.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "72",
+                        "endOffsets": "123"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "expo.modules.openwavenative.openwave-native-mergeReleaseResources-54:/values-v30/values-v30.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\josue\\.gradle\\caches\\9.4.1\\transforms\\ea9398ac5f7799a5913d013cd36b4cf4\\transformed\\material3-release\\res\\values-v30\\values-v30.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "72",
+                        "endOffsets": "123"
+                    }
+                }
+            ]
+        }
+    ]
+}

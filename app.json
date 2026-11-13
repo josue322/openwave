@@ -39,7 +39,15 @@
       ],
       "expo-secure-store",
       "expo-asset",
-      "expo-font"
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": true
+        }
+      ],
+      "./plugins/withOpenWaveNative"
     ],
     "experiments": {
       "typedRoutes": true

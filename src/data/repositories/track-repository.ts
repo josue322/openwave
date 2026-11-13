@@ -2,6 +2,7 @@ import { ITrackRepository } from '../../domain/repositories/i-track-repository';
 import { Track } from '../../domain/entities/track';
 import { TrackDao } from '../local/track-dao';
 import { MediaStoreScanner } from '../local/scanner/mediastore-scanner';
+import { FolderManager } from '../local/scanner/folder-manager';
 
 export class TrackRepository implements ITrackRepository {
   private trackDao: TrackDao;
@@ -40,13 +41,34 @@ export class TrackRepository implements ITrackRepository {
     return this.trackDao.deleteTrack(trackId);
   }
 
+  public async updateMetadata(
+    trackId: string,
+    meta: {
+      title?: string;
+      artistName?: string | null;
+      albumTitle?: string | null;
+      genre?: string | null;
+      year?: number | null;
+    }
+  ): Promise<void> {
+    return this.trackDao.updateMetadata(trackId, meta);
+  }
+
   public async scanAndSaveTracks(
     onProgress?: (current: number, total: number) => void
   ): Promise<Track[]> {
-    const scannedTracks = await this.scanner.scanAudioAssets(onProgress);
+    const excluded = await FolderManager.getExcludedFolders().catch(() => []);
+    const scannedTracks = await this.scanner.scanAudioAssets(onProgress, excluded);
     if (scannedTracks.length > 0) {
       await this.trackDao.insertBatch(scannedTracks);
     }
+
+    // Re-scan user-configured SAF folders as well
+    const safFolders = await FolderManager.getScannedFolders().catch(() => []);
+    for (const folder of safFolders) {
+      await FolderManager.scanSafFolder(folder.uri, folder.label).catch(() => {});
+    }
+
     return this.getAllTracks();
   }
 }

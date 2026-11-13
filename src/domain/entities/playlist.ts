@@ -9,6 +9,7 @@ export interface Playlist {
   isFavorite: boolean;
   isSmartPlaylist: boolean;
   smartRulesJson?: string | null;
+  artworkUri?: string | null;
   trackCount?: number;
 }
 

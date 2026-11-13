@@ -73,4 +73,22 @@ describe('QueueManager', () => {
     const queue = queueManager.getQueue();
     expect(queue[1].id).toBe('99');
   });
+
+  test('reorder swaps queue positions and maintains currentIndex on playing track', () => {
+    queueManager.setQueue(mockTracks, 0); // Track 1 playing at index 0
+    queueManager.reorder(0, 2);
+
+    const queue = queueManager.getQueue();
+    expect(queue.map((t) => t.id)).toEqual(['2', '3', '1']);
+    expect(queueManager.getCurrentIndex()).toBe(2);
+    expect(queueManager.getCurrentTrack()?.id).toBe('1');
+  });
+
+  test('appendToQueue adds tracks to the end preserving active track', () => {
+    queueManager.setQueue([mockTracks[0]], 0);
+    queueManager.appendToQueue([mockTracks[1], mockTracks[2]]);
+
+    expect(queueManager.getQueue().map((t) => t.id)).toEqual(['1', '2', '3']);
+    expect(queueManager.getCurrentTrack()?.id).toBe('1');
+  });
 });

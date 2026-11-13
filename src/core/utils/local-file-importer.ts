@@ -4,6 +4,7 @@ import { Track } from '../../domain/entities/track';
 import { TrackDao } from '../../data/local/track-dao';
 import { useLibraryStore } from '../../store/library-store';
 import { usePlayerStore } from '../../store/player-store';
+import { OpenWaveNativeBridge } from '../../playback/native/openwave-native-bridge';
 
 export class LocalFileImporter {
   private static trackDao = new TrackDao();
@@ -57,19 +58,29 @@ export class LocalFileImporter {
         finalAudioUri = asset.uri;
       }
 
+      const extracted = OpenWaveNativeBridge.isNativeAvailable()
+        ? await OpenWaveNativeBridge.extractMetadata(finalAudioUri)
+        : null;
+
       const track: Track = {
         id: uniqueId,
-        title: cleanTitle,
-        artistName: 'Música Local',
-        albumTitle: 'Mis Descargas',
-        duration: 180000, // Initial estimate until playback engine reads actual duration
-        uri: finalAudioUri, // Permanent or content:// URI that is readable by expo-audio
-        mimeType: asset.mimeType || 'audio/mpeg',
-        fileSize: asset.size,
+        title: extracted?.title || cleanTitle,
+        artistName: extracted?.artistName || 'Música Local',
+        albumTitle: extracted?.albumTitle || 'Mis Descargas',
+        genre: extracted?.genre ?? undefined,
+        duration: extracted?.duration && extracted.duration > 0 ? extracted.duration : 180000,
+        bitrate: extracted?.bitrate ?? undefined,
+        sampleRate: extracted?.sampleRate ?? undefined,
+        artworkUri: extracted?.artworkUri ?? undefined,
+        isCorrupt: Boolean(extracted?.isCorrupt),
+        uri: finalAudioUri, // Permanent or content:// URI that is readable by audio engine
+        mimeType: extracted?.mimeType || asset.mimeType || 'audio/mpeg',
+        fileSize: extracted?.fileSize ?? asset.size,
         dateAdded: Date.now(),
         playCount: 0,
         isFavorite: false,
         sourceType: 'local',
+        folderPath: 'Mis Descargas',
       };
 
       newTracks.push(track);

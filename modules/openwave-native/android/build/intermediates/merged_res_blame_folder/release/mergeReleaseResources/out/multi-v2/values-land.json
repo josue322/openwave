@@ -1,0 +1,102 @@
+{
+    "logs": [
+        {
+            "outputFile": "expo.modules.openwavenative.openwave-native-release-56:/values-land/values-land.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\josue\\.gradle\\caches\\9.4.1\\transforms\\4a8ab76c974ee9d6e503bbfcee08ec4a\\transformed\\appcompat-1.7.1\\res\\values-land\\values-land.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,125,196",
+                        "endColumns": "69,70,67",
+                        "endOffsets": "120,191,259"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\josue\\.gradle\\caches\\9.4.1\\transforms\\2e270187dca8dc0d9dc2ea0b5697d573\\transformed\\mediarouter-1.8.1\\res\\values-land\\values-land.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,130,208",
+                        "endColumns": "74,77,74",
+                        "endOffsets": "125,203,278"
+                    },
+                    "to": {
+                        "startLines": "11,12,13",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "774,849,927",
+                        "endColumns": "74,77,74",
+                        "endOffsets": "844,922,997"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\josue\\.gradle\\caches\\9.4.1\\transforms\\b1d54a58cabf313c4ba132b59dae61a5\\transformed\\play-services-cast-framework-22.1.0\\res\\values-land\\values.xml",
+                    "from": {
+                        "startLines": "4,5,6,7,8,9",
+                        "startColumns": "0,0,0,0,0,0",
+                        "startOffsets": "183,264,344,414,483,578",
+                        "endColumns": "80,79,69,68,94,90",
+                        "endOffsets": "263,343,413,482,577,668"
+                    },
+                    "to": {
+                        "startLines": "5,6,7,8,9,10",
+                        "startColumns": "4,4,4,4,4,4",
+                        "startOffsets": "264,349,433,507,580,679",
+                        "endColumns": "84,83,73,72,98,94",
+                        "endOffsets": "344,428,502,575,674,769"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "expo.modules.openwavenative.openwave-native-mergeReleaseResources-54:/values-land/values-land.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\josue\\.gradle\\caches\\9.4.1\\transforms\\4a8ab76c974ee9d6e503bbfcee08ec4a\\transformed\\appcompat-1.7.1\\res\\values-land\\values-land.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,125,196",
+                        "endColumns": "69,70,67",
+                        "endOffsets": "120,191,259"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\josue\\.gradle\\caches\\9.4.1\\transforms\\2e270187dca8dc0d9dc2ea0b5697d573\\transformed\\mediarouter-1.8.1\\res\\values-land\\values-land.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,130,208",
+                        "endColumns": "74,77,74",
+                        "endOffsets": "125,203,278"
+                    },
+                    "to": {
+                        "startLines": "11,12,13",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "774,849,927",
+                        "endColumns": "74,77,74",
+                        "endOffsets": "844,922,997"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\josue\\.gradle\\caches\\9.4.1\\transforms\\b1d54a58cabf313c4ba132b59dae61a5\\transformed\\play-services-cast-framework-22.1.0\\res\\values-land\\values.xml",
+                    "from": {
+                        "startLines": "4,5,6,7,8,9",
+                        "startColumns": "0,0,0,0,0,0",
+                        "startOffsets": "183,264,344,414,483,578",
+                        "endColumns": "80,79,69,68,94,90",
+                        "endOffsets": "263,343,413,482,577,668"
+                    },
+                    "to": {
+                        "startLines": "5,6,7,8,9,10",
+                        "startColumns": "4,4,4,4,4,4",
+                        "startOffsets": "264,349,433,507,580,679",
+                        "endColumns": "84,83,73,72,98,94",
+                        "endOffsets": "344,428,502,575,674,769"
+                    }
+                }
+            ]
+        }
+    ]
+}

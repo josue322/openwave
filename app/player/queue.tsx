@@ -1,8 +1,24 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Image,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { ChevronDown, Trash2, Music, Play } from 'lucide-react-native';
+import {
+  ChevronDown,
+  Trash2,
+  Music,
+  Play,
+  ArrowUp,
+  ArrowDown,
+  Shuffle,
+} from 'lucide-react-native';
 import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
 import { usePlayerStore } from '../../src/store/player-store';
@@ -13,20 +29,37 @@ export default function QueueScreen() {
   const router = useRouter();
   const queue = usePlayerStore((s) => s.queue);
   const queueIndex = usePlayerStore((s) => s.queueIndex);
-  const currentTrack = usePlayerStore((s) => s.currentTrack);
-  const setQueue = usePlayerStore((s) => s.setQueue);
+  const shuffle = usePlayerStore((s) => s.shuffle);
 
   const playbackService = PlaybackService.getInstance();
-  const queueManager = playbackService.getQueueManager();
 
   const handleRemoveTrack = (index: number) => {
-    queueManager.removeAt(index);
-    const updated = queueManager.getQueue();
-    setQueue(updated, queueManager.getCurrentIndex());
+    playbackService.removeFromQueue(index);
+  };
+
+  const handleMoveTrack = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= queue.length) return;
+    playbackService.reorderQueue(fromIndex, toIndex);
   };
 
   const handlePlayFromQueue = (track: Track, index: number) => {
     playbackService.playTrack(track, queue, index);
+  };
+
+  const handleClearQueue = () => {
+    if (queue.length === 0) return;
+    Alert.alert(
+      'Vaciar cola de reproducción',
+      '¿Deseas detener la reproducción actual y limpiar toda la cola?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Vaciar',
+          style: 'destructive',
+          onPress: () => playbackService.clearQueue(),
+        },
+      ]
+    );
   };
 
   const renderQueueItem = ({ item, index }: { item: Track; index: number }) => {
@@ -36,13 +69,21 @@ export default function QueueScreen() {
       <TouchableOpacity
         style={[styles.trackItem, isCurrent && styles.trackItemActive]}
         onPress={() => handlePlayFromQueue(item, index)}
-        activeOpacity={0.7}
+        activeOpacity={0.75}
       >
         <View style={styles.indexContainer}>
           {isCurrent ? (
             <Play color={colors.primary} size={16} fill={colors.primary} />
           ) : (
             <Text style={styles.indexText}>{index + 1}</Text>
+          )}
+        </View>
+
+        <View style={styles.thumbBox}>
+          {item.artworkUri ? (
+            <Image source={{ uri: item.artworkUri }} style={styles.thumbImage} />
+          ) : (
+            <Music color={isCurrent ? colors.primary : colors.textMuted} size={16} />
           )}
         </View>
 
@@ -58,13 +99,33 @@ export default function QueueScreen() {
           </Text>
         </View>
 
-        <TouchableOpacity
-          onPress={() => handleRemoveTrack(index)}
-          style={styles.removeButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Trash2 color={colors.textMuted} size={18} />
-        </TouchableOpacity>
+        <View style={styles.actionsGroup}>
+          <TouchableOpacity
+            onPress={() => handleMoveTrack(index, index - 1)}
+            disabled={index === 0}
+            style={[styles.actionIcon, index === 0 && { opacity: 0.25 }]}
+            hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+          >
+            <ArrowUp color={colors.textSecondary} size={16} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => handleMoveTrack(index, index + 1)}
+            disabled={index === queue.length - 1}
+            style={[styles.actionIcon, index === queue.length - 1 && { opacity: 0.25 }]}
+            hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+          >
+            <ArrowDown color={colors.textSecondary} size={16} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => handleRemoveTrack(index)}
+            style={styles.actionIcon}
+            hitSlop={{ top: 8, bottom: 8, left: 6, right: 8 }}
+          >
+            <Trash2 color={colors.error} size={16} />
+          </TouchableOpacity>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -79,8 +140,28 @@ export default function QueueScreen() {
         >
           <ChevronDown color={colors.textPrimary} size={28} />
         </TouchableOpacity>
-        <Text style={styles.screenTitle}>Cola de Reproducción</Text>
-        <View style={{ width: 28 }} />
+        <View style={styles.headerCenter}>
+          <Text style={styles.screenTitle}>Cola de Reproducción</Text>
+          <Text style={styles.queueCount}>
+            {queue.length} {queue.length === 1 ? 'pista' : 'pistas'}
+          </Text>
+        </View>
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            onPress={() => playbackService.toggleShuffle()}
+            style={styles.headerActionBtn}
+            hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
+          >
+            <Shuffle color={shuffle ? colors.primary : colors.textSecondary} size={20} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleClearQueue}
+            style={styles.headerActionBtn}
+            hitSlop={{ top: 10, bottom: 10, left: 8, right: 10 }}
+          >
+            <Trash2 color={queue.length > 0 ? colors.error : colors.textDisabled} size={20} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Queue Items */}
@@ -113,33 +194,49 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
+  },
+  headerCenter: {
+    alignItems: 'center',
   },
   screenTitle: {
     ...typography.h3,
     color: colors.textPrimary,
   },
+  queueCount: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    marginTop: 1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  headerActionBtn: {
+    padding: 4,
+  },
   listContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 10,
   },
   trackItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   trackItemActive: {
     backgroundColor: 'rgba(0, 229, 255, 0.08)',
-    borderRadius: 8,
+    borderRadius: 10,
     paddingHorizontal: 8,
   },
   indexContainer: {
-    width: 28,
+    width: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -147,13 +244,28 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.textMuted,
   },
+  thumbBox: {
+    width: 38,
+    height: 38,
+    borderRadius: 8,
+    backgroundColor: colors.surfaceElevated,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+    overflow: 'hidden',
+  },
+  thumbImage: {
+    width: '100%',
+    height: '100%',
+  },
   trackDetails: {
     flex: 1,
-    marginHorizontal: 12,
+    marginHorizontal: 10,
   },
   trackTitle: {
     ...typography.bodyBold,
     color: colors.textPrimary,
+    fontSize: 14,
   },
   trackTitleActive: {
     color: colors.primary,
@@ -163,7 +275,12 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: 2,
   },
-  removeButton: {
+  actionsGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  actionIcon: {
     padding: 6,
   },
   emptyContainer: {

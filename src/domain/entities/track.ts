@@ -22,6 +22,9 @@ export interface Track {
   playCount: number;
   isFavorite: boolean;
   sourceType: 'local' | 'stream';
+  folderPath?: string | null;
+  lyricsLrc?: string | null;
+  isCorrupt?: boolean;
 }
 
 export type RepeatMode = 'off' | 'all' | 'one';

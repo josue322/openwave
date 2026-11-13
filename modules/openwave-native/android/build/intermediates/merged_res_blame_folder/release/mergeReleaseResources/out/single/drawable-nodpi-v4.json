@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable-nodpi-v4/cast_album_art_placeholder_large.png",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable-nodpi-v4/cast_album_art_placeholder_large.png"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable-nodpi-v4/cast_album_art_placeholder.png",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable-nodpi-v4/cast_album_art_placeholder.png"
+    }
+]

@@ -1,0 +1,19 @@
+R_DEF: Internal format may change without notice
+local
+drawable ic_openwave_notif
+drawable ic_widget_next
+drawable ic_widget_note
+drawable ic_widget_pause
+drawable ic_widget_play
+drawable ic_widget_prev
+drawable widget_bg
+id widget_artist
+id widget_artwork
+id widget_btn_next
+id widget_btn_play_pause
+id widget_btn_prev
+id widget_root
+id widget_title
+layout openwave_widget
+xml automotive_app_desc
+xml openwave_widget_info

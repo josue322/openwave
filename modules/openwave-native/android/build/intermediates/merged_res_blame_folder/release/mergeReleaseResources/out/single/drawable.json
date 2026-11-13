@@ -1,0 +1,658 @@
+[
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_skip_prev.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_skip_prev.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_tooltip_background.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_tooltip_background.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_cast_route_seekbar_track.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_cast_route_seekbar_track.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ratingbar_indicator_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ratingbar_indicator_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_button_connecting_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_button_connecting_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_mute.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_mute.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_menu_copy_mtrl_am_alpha.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_menu_copy_mtrl_am_alpha.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_text_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_text_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_expanded_controller_forward30.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_expanded_controller_forward30.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_expanded_controller_seekbar_track.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_expanded_controller_seekbar_track.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_expanded_controller_skip_previous.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_expanded_controller_skip_previous.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_go_search_api_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_go_search_api_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_voice_search_api_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_voice_search_api_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_skip_prev.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_skip_prev.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_pause.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_pause.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_cast_checkbox.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_cast_checkbox.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_button_connected_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_button_connected_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_expanded_controller_play.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_expanded_controller_play.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_cast_thumb.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_cast_thumb.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_text_cursor_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_text_cursor_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_list_selector_holo_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_list_selector_holo_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_button_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_button_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_pause_large.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_pause_large.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_expanded_controller_closed_caption.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_expanded_controller_closed_caption.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/btn_checkbox_unchecked_mtrl.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/btn_checkbox_unchecked_mtrl.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_call_answer_video_low.xml",
+        "source": "expo.modules.openwavenative.openwave-native-core-1.15.0-28:/drawable/ic_call_answer_video_low.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_item_background_holo_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_item_background_holo_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_call_decline_low.xml",
+        "source": "expo.modules.openwavenative.openwave-native-core-1.15.0-28:/drawable/ic_call_decline_low.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_list_selector_background_transition_holo_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_list_selector_background_transition_holo_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_text_light_normal.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_text_light_normal.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/notification_icon_background.xml",
+        "source": "expo.modules.openwavenative.openwave-native-core-1.15.0-28:/drawable/notification_icon_background.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/notification_bg_low.xml",
+        "source": "expo.modules.openwavenative.openwave-native-core-1.15.0-28:/drawable/notification_bg_low.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_menu_selectall_mtrl_alpha.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_menu_selectall_mtrl_alpha.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_btn_borderless_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_btn_borderless_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_arrow_drop_right_black_24dp.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_arrow_drop_right_black_24dp.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ratingbar_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ratingbar_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_rewind.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_rewind.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ratingbar_small_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ratingbar_small_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_openwave_notif.xml",
+        "source": "expo.modules.openwavenative.openwave-native-main-57:/drawable/ic_openwave_notif.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/btn_radio_on_to_off_mtrl_animation.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/btn_radio_on_to_off_mtrl_animation.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_rewind10.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_rewind10.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_ab_back_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_ab_back_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_group_expand.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_group_expand.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_rewind30.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_rewind30.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_menu_overflow_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_menu_overflow_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_small_icon.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_small_icon.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_dialog_material_background_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_dialog_material_background_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_play.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_play.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_button_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_button_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/media_route_button_disconnected.xml",
+        "source": "expo.modules.openwavenative.openwave-native-media3-cast-1.9.1-15:/drawable/media_route_button_disconnected.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_btn_radio_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_btn_radio_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_icon_dark_normal.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_icon_dark_normal.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_forward.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_forward.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_seekbar_track_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_seekbar_track_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_dialog_material_background_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_dialog_material_background_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/media_route_button_connected.xml",
+        "source": "expo.modules.openwavenative.openwave-native-media3-cast-1.9.1-15:/drawable/media_route_button_connected.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/tooltip_frame_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/tooltip_frame_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_wifi_icon_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_wifi_icon_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/test_level_drawable.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/test_level_drawable.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_icon_light_normal.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_icon_light_normal.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_expanded_controller_actionbar_bg_gradient_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_expanded_controller_actionbar_bg_gradient_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_icon_dark_focused.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_icon_dark_focused.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_menu_paste_mtrl_am_alpha.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_menu_paste_mtrl_am_alpha.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_expanded_controller_rewind30.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_expanded_controller_rewind30.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_play.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_play.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/media_session_service_notification_ic_music_note.xml",
+        "source": "expo.modules.openwavenative.openwave-native-media3-session-1.9.1-22:/drawable/media_session_service_notification_ic_music_note.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_expanded_controller_mute.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_expanded_controller_mute.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_list_selector_background_transition_holo_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_list_selector_background_transition_holo_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_switch_thumb_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_switch_thumb_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_list_selector_holo_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_list_selector_holo_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_media_pause_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_media_pause_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_text_dark_normal.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_text_dark_normal.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_item_background_holo_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_item_background_holo_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_expanded_controller_pause.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_expanded_controller_pause.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_forward10.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_forward10.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/btn_checkbox_checked_to_unchecked_mtrl_animation.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/btn_checkbox_checked_to_unchecked_mtrl_animation.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_dialog_close_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_dialog_close_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_disconnect.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_disconnect.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_stop.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_stop.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_expanded_controller_skip_next.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_expanded_controller_skip_next.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_mini_controller_progress_drawable.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_mini_controller_progress_drawable.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_media_play_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_media_play_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_skip_ad_label_border.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_skip_ad_label_border.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_rewind30.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_rewind30.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_checked_checkbox.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/ic_checked_checkbox.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_menu_share_mtrl_alpha.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_menu_share_mtrl_alpha.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_search_api_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_search_api_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_dialog_close_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_dialog_close_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_call_answer_video.xml",
+        "source": "expo.modules.openwavenative.openwave-native-core-1.15.0-28:/drawable/ic_call_answer_video.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_btn_radio_material_anim.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_btn_radio_material_anim.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_icon_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_icon_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/btn_checkbox_unchecked_to_checked_mtrl_animation.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/btn_checkbox_unchecked_to_checked_mtrl_animation.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_vector_test.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-resources-1.7.1-30:/drawable/abc_vector_test.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_expanded_controller_bg_gradient_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_expanded_controller_bg_gradient_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_skip_next.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_skip_next.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/widget_bg.xml",
+        "source": "expo.modules.openwavenative.openwave-native-main-57:/drawable/widget_bg.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_widget_note.xml",
+        "source": "expo.modules.openwavenative.openwave-native-main-57:/drawable/ic_widget_note.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_skip_next.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_skip_next.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_star_half_black_48dp.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_star_half_black_48dp.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_play_large.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_play_large.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_stop_live_stream.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_stop_live_stream.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_group_collapse.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_group_collapse.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_media_stop_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_media_stop_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/notification_tile_bg.xml",
+        "source": "expo.modules.openwavenative.openwave-native-core-1.15.0-28:/drawable/notification_tile_bg.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_call_answer.xml",
+        "source": "expo.modules.openwavenative.openwave-native-core-1.15.0-28:/drawable/ic_call_answer.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_call_decline.xml",
+        "source": "expo.modules.openwavenative.openwave-native-core-1.15.0-28:/drawable/ic_call_decline.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_button_connecting_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_button_connecting_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_icon_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_icon_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_icon_disabled.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_icon_disabled.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_textfield_search_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_textfield_search_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_cast_stop.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_cast_stop.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_seekbar_thumb_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_seekbar_thumb_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_button_dark_static.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_button_dark_static.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_text_dark_focused.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_text_dark_focused.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_btn_check_material_anim.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_btn_check_material_anim.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_button_light_static.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_button_light_static.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/notification_bg.xml",
+        "source": "expo.modules.openwavenative.openwave-native-core-1.15.0-28:/drawable/notification_bg.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_vol_type_audiotrack_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_vol_type_audiotrack_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_clear_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_clear_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_expanded_controller_live_indicator_drawable.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_expanded_controller_live_indicator_drawable.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/tooltip_frame_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/tooltip_frame_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_stop_large.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_stop_large.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_wifi_icon_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_wifi_icon_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_expanded_controller_seekbar_thumb.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_expanded_controller_seekbar_thumb.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_text_light_focused.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_text_light_focused.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_button_connected_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_button_connected_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_widget_next.xml",
+        "source": "expo.modules.openwavenative.openwave-native-main-57:/drawable/ic_widget_next.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_ic_menu_cut_mtrl_alpha.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_ic_menu_cut_mtrl_alpha.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_text_disabled.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_text_disabled.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/btn_radio_off_to_on_mtrl_animation.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/btn_radio_off_to_on_mtrl_animation.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_forward30.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_notification_forward30.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_closed_caption.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_closed_caption.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_widget_prev.xml",
+        "source": "expo.modules.openwavenative.openwave-native-main-57:/drawable/ic_widget_prev.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_notification_connecting.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-22.1.0-39:/drawable/cast_ic_notification_connecting.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_forward30.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_forward30.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_seekbar_tick_mark_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_seekbar_tick_mark_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_btn_check_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_btn_check_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_widget_pause.xml",
+        "source": "expo.modules.openwavenative.openwave-native-main-57:/drawable/ic_widget_pause.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_expanded_controller_stop.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_expanded_controller_stop.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_star_black_48dp.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_star_black_48dp.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_unchecked_checkbox.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/ic_unchecked_checkbox.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/media3_icon_circular_play.png",
+        "source": "expo.modules.openwavenative.openwave-native-media3-session-1.9.1-22:/drawable/media3_icon_circular_play.png"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_mini_controller_gradient_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_mini_controller_gradient_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_icon_light_focused.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_icon_light_focused.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_cab_background_internal_bg.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_cab_background_internal_bg.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_cast_mute_button.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_cast_mute_button.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_spinner_textfield_background_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_spinner_textfield_background_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/btn_checkbox_checked_mtrl.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/btn_checkbox_checked_mtrl.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_vol_type_audiotrack_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_vol_type_audiotrack_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/btn_radio_on_mtrl.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/btn_radio_on_mtrl.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_vol_mute.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/ic_vol_mute.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_vol_unmute.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/ic_vol_unmute.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_tab_indicator_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_tab_indicator_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_widget_play.xml",
+        "source": "expo.modules.openwavenative.openwave-native-main-57:/drawable/ic_widget_play.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/cast_ic_mini_controller_pause.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-cast-framework-22.1.0-34:/drawable/cast_ic_mini_controller_pause.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/ic_call_answer_low.xml",
+        "source": "expo.modules.openwavenative.openwave-native-core-1.15.0-28:/drawable/ic_call_answer_low.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_cab_background_top_material.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_cab_background_top_material.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/abc_btn_default_mtrl_shape.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/abc_btn_default_mtrl_shape.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_cast_group_seekbar_track.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_cast_group_seekbar_track.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/btn_radio_off_mtrl.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/drawable/btn_radio_off_mtrl.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/common_google_signin_btn_text_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-play-services-base-18.5.0-19:/drawable/common_google_signin_btn_text_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_media_play_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_media_play_dark.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_media_stop_light.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_media_stop_light.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/drawable/mr_media_pause_dark.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/drawable/mr_media_pause_dark.xml"
+    }
+]

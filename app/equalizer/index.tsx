@@ -1,8 +1,19 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Switch,
+  TextInput,
+  Modal,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { ChevronDown, Sliders, Zap, Volume2 } from 'lucide-react-native';
+import { ChevronDown, Zap, Volume2, Plus, Trash2, Info, X, Check } from 'lucide-react-native';
+import { OpenWaveNativeBridge } from '../../src/playback/native/openwave-native-bridge';
 import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
 import {
@@ -21,8 +32,39 @@ export default function EqualizerScreen() {
   const setBandGain = useEqualizerStore((s) => s.setBandGain);
   const bassBoost = useEqualizerStore((s) => s.bassBoost);
   const setBassBoost = useEqualizerStore((s) => s.setBassBoost);
+  const trebleBoost = useEqualizerStore((s) => s.trebleBoost);
+  const setTrebleBoost = useEqualizerStore((s) => s.setTrebleBoost);
+  const surround = useEqualizerStore((s) => s.surround);
+  const setSurround = useEqualizerStore((s) => s.setSurround);
+  const virtualizer = useEqualizerStore((s) => s.virtualizer);
+  const setVirtualizer = useEqualizerStore((s) => s.setVirtualizer);
+  const balance = useEqualizerStore((s) => s.balance);
+  const setBalance = useEqualizerStore((s) => s.setBalance);
+  const preampGain = useEqualizerStore((s) => s.preampGain);
+  const setPreampGain = useEqualizerStore((s) => s.setPreampGain);
+  const customProfiles = useEqualizerStore((s) => s.customProfiles);
+  const saveCustomProfile = useEqualizerStore((s) => s.saveCustomProfile);
+  const applyCustomProfile = useEqualizerStore((s) => s.applyCustomProfile);
+  const deleteCustomProfile = useEqualizerStore((s) => s.deleteCustomProfile);
+  const loadSavedEqState = useEqualizerStore((s) => s.loadSavedEqState);
 
-  const presetNames = SPANISH_PRESETS;
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [profileName, setProfileName] = useState('');
+
+  useEffect(() => {
+    loadSavedEqState().catch(() => {});
+  }, []);
+
+  const handleSaveProfile = async () => {
+    if (!profileName.trim()) {
+      Alert.alert('Nombre requerido', 'Escribe un nombre para guardar tu perfil de ecualización.');
+      return;
+    }
+    await saveCustomProfile(profileName.trim());
+    setProfileName('');
+    setShowSaveModal(false);
+    Alert.alert('Perfil guardado', 'Tu configuración de ecualización se guardó en la base local.');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,7 +76,7 @@ export default function EqualizerScreen() {
         >
           <ChevronDown color={colors.textPrimary} size={28} />
         </TouchableOpacity>
-        <Text style={styles.screenTitle}>Ecualizador Gráfico</Text>
+        <Text style={styles.screenTitle}>Ecualizador y Audio</Text>
         <Switch
           value={enabled}
           onValueChange={setEnabled}
@@ -44,14 +86,34 @@ export default function EqualizerScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Presets Horizontal Selector */}
-        <Text style={styles.sectionHeader}>Preajustes</Text>
+        {/* Honest Transparency Banner (Spec v1.1 Section 9) */}
+        <View style={styles.infoBanner}>
+          <Info color={colors.primary} size={18} />
+          <Text style={styles.infoBannerText}>
+            {OpenWaveNativeBridge.isNativeAvailable()
+              ? 'DSP Nativo Activo (AndroidX Media3): Ecualizador, Bass Boost, Virtualizador, Loudness y Balance L/R conectados al procesador de audio en hardware.'
+              : 'Modo Expo Go: los perfiles y ajustes se guardan en SQLite. Compila con Development Build o APK (eas build / expo run:android) para activar el procesador DSP AudioEffect + Balance PCM en hardware Android.'}
+          </Text>
+        </View>
+
+        {/* Presets */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeader}>Preajustes</Text>
+          <TouchableOpacity
+            style={styles.saveProfileBtn}
+            onPress={() => setShowSaveModal(true)}
+          >
+            <Plus color={colors.primary} size={14} />
+            <Text style={styles.saveProfileText}>Guardar perfil</Text>
+          </TouchableOpacity>
+        </View>
+
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.presetsContainer}
         >
-          {presetNames.map((name) => {
+          {SPANISH_PRESETS.map((name: EqualizerPresetName) => {
             const isSelected = selectedPreset === name;
             return (
               <TouchableOpacity
@@ -60,9 +122,7 @@ export default function EqualizerScreen() {
                 onPress={() => applyPreset(name)}
                 disabled={!enabled}
               >
-                <Text
-                  style={[styles.presetText, isSelected && styles.presetTextActive]}
-                >
+                <Text style={[styles.presetText, isSelected && styles.presetTextActive]}>
                   {name}
                 </Text>
               </TouchableOpacity>
@@ -70,16 +130,43 @@ export default function EqualizerScreen() {
           })}
         </ScrollView>
 
-        {/* 5-Band Sliders Graphic Display */}
+        {/* Custom Saved Profiles */}
+        {customProfiles.length > 0 && (
+          <View style={styles.customProfilesBlock}>
+            <Text style={styles.customTitle}>Mis Perfiles Guardados</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.presetsContainer}>
+              {customProfiles.map((prof) => {
+                const isSelected = selectedPreset === prof.name;
+                return (
+                  <View key={prof.name} style={styles.customPillRow}>
+                    <TouchableOpacity
+                      style={[styles.presetPill, isSelected && styles.presetPillActive]}
+                      onPress={() => applyCustomProfile(prof)}
+                      disabled={!enabled}
+                    >
+                      <Text style={[styles.presetText, isSelected && styles.presetTextActive]}>
+                        {prof.name}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => deleteCustomProfile(prof.name)}>
+                      <Trash2 color={colors.error} size={14} />
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* 5-Band Sliders */}
         <View style={[styles.bandsCard, !enabled && styles.disabledCard]}>
-          <Text style={styles.cardTitle}>5 Bandas Paramétricas</Text>
+          <Text style={styles.cardTitle}>Ecualizador Gráfico (5 Bandas)</Text>
           <View style={styles.bandsRow}>
             {bands.map((band, idx) => (
               <View key={band.frequency} style={styles.bandColumn}>
                 <Text style={styles.gainText}>
                   {band.gain > 0 ? `+${band.gain}` : band.gain} dB
                 </Text>
-                {/* Vertical Bar Simulator */}
                 <View style={styles.sliderTrack}>
                   <View
                     style={[
@@ -91,7 +178,6 @@ export default function EqualizerScreen() {
                     ]}
                   />
                 </View>
-                {/* Step buttons for precise gain adjustment */}
                 <View style={styles.stepButtons}>
                   <TouchableOpacity
                     style={styles.stepButton}
@@ -114,45 +200,178 @@ export default function EqualizerScreen() {
           </View>
         </View>
 
-        {/* Enhancements / Bass Boost */}
-        <Text style={styles.sectionHeader}>Potenciadores de Sonido</Text>
+        {/* Sound Effects Cards */}
+        <Text style={styles.sectionHeader}>Efectos, Balance y Ganancia</Text>
+
+        <EffectLevelCard
+          title="Graves (Bass Boost)"
+          subtitle="Refuerzo de frecuencias subgraves"
+          value={bassBoost}
+          onChange={setBassBoost}
+          disabled={!enabled}
+        />
+
+        <EffectLevelCard
+          title="Agudos (Treble)"
+          subtitle="Claridad y brillo en altas frecuencias"
+          value={trebleBoost}
+          onChange={setTrebleBoost}
+          disabled={!enabled}
+        />
+
+        <EffectLevelCard
+          title="Sonido Envolvente (Surround)"
+          subtitle="Amplitud espacial envolvente"
+          value={surround}
+          onChange={setSurround}
+          disabled={!enabled}
+        />
+
+        <EffectLevelCard
+          title="Virtualizador de Audio"
+          subtitle="Escenario acústico optimizado para audífonos"
+          value={virtualizer}
+          onChange={setVirtualizer}
+          disabled={!enabled}
+        />
+
+        {/* Balance I/D & Preamp Gain */}
         <View style={[styles.effectCard, !enabled && styles.disabledCard]}>
           <View style={styles.effectHeader}>
             <View style={styles.effectIconCircle}>
-              <Zap color={colors.secondary} size={20} />
+              <Volume2 color={colors.primary} size={20} />
             </View>
             <View style={styles.effectInfo}>
-              <Text style={styles.effectTitle}>Graves Profundos (Bass Boost)</Text>
-              <Text style={styles.effectSubtitle}>Intensifica frecuencias bajas sub-bass</Text>
+              <Text style={styles.effectTitle}>Balance Estéreo (I / D)</Text>
+              <Text style={styles.effectSubtitle}>
+                {balance === 0
+                  ? 'Centrado'
+                  : balance < 0
+                  ? `Izquierda ${Math.abs(balance)}%`
+                  : `Derecha ${balance}%`}
+              </Text>
             </View>
-            <Text style={styles.effectValue}>{bassBoost}%</Text>
           </View>
-
           <View style={styles.boostButtonsRow}>
-            {[0, 25, 50, 75, 100].map((level) => (
+            {[-100, -50, 0, 50, 100].map((val) => (
               <TouchableOpacity
-                key={level}
-                style={[
-                  styles.boostPill,
-                  bassBoost === level && styles.boostPillActive,
-                ]}
-                onPress={() => setBassBoost(level)}
+                key={val}
+                style={[styles.boostPill, balance === val && styles.boostPillActive]}
+                onPress={() => setBalance(val)}
                 disabled={!enabled}
               >
-                <Text
-                  style={[
-                    styles.boostText,
-                    bassBoost === level && styles.boostTextActive,
-                  ]}
-                >
-                  {level}%
+                <Text style={[styles.boostText, balance === val && styles.boostTextActive]}>
+                  {val === 0 ? 'Centro' : val < 0 ? `I ${Math.abs(val)}` : `D ${val}`}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={[styles.effectCard, !enabled && styles.disabledCard]}>
+          <View style={styles.effectHeader}>
+            <View style={styles.effectIconCircle}>
+              <Zap color="#F59E0B" size={20} />
+            </View>
+            <View style={styles.effectInfo}>
+              <Text style={styles.effectTitle}>Ganancia de Audio (Preamp)</Text>
+              <Text style={styles.effectSubtitle}>Ajuste de nivel global dB</Text>
+            </View>
+            <Text style={styles.effectValue}>
+              {preampGain > 0 ? `+${preampGain}` : preampGain} dB
+            </Text>
+          </View>
+          <View style={styles.boostButtonsRow}>
+            {[-6, -3, 0, 3, 6].map((val) => (
+              <TouchableOpacity
+                key={val}
+                style={[styles.boostPill, preampGain === val && styles.boostPillActive]}
+                onPress={() => setPreampGain(val)}
+                disabled={!enabled}
+              >
+                <Text style={[styles.boostText, preampGain === val && styles.boostTextActive]}>
+                  {val > 0 ? `+${val}` : val} dB
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
       </ScrollView>
+
+      {/* Save Custom Profile Modal */}
+      <Modal
+        visible={showSaveModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSaveModal(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Guardar Perfil Personalizado</Text>
+              <TouchableOpacity onPress={() => setShowSaveModal(false)}>
+                <X color={colors.textSecondary} size={22} />
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              style={styles.input}
+              placeholder="Ej: Mi perfil nocturno, Audífonos Studio..."
+              placeholderTextColor={colors.textDisabled}
+              value={profileName}
+              onChangeText={setProfileName}
+            />
+            <TouchableOpacity style={styles.modalSaveBtn} onPress={handleSaveProfile}>
+              <Check color="#0A0D14" size={18} />
+              <Text style={styles.modalSaveText}>Guardar configuración</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
+  );
+}
+
+function EffectLevelCard({
+  title,
+  subtitle,
+  value,
+  onChange,
+  disabled,
+}: {
+  title: string;
+  subtitle: string;
+  value: number;
+  onChange: (level: number) => void;
+  disabled: boolean;
+}) {
+  return (
+    <View style={[styles.effectCard, disabled && styles.disabledCard]}>
+      <View style={styles.effectHeader}>
+        <View style={styles.effectIconCircle}>
+          <Zap color={colors.secondary} size={20} />
+        </View>
+        <View style={styles.effectInfo}>
+          <Text style={styles.effectTitle}>{title}</Text>
+          <Text style={styles.effectSubtitle}>{subtitle}</Text>
+        </View>
+        <Text style={styles.effectValue}>{value}%</Text>
+      </View>
+
+      <View style={styles.boostButtonsRow}>
+        {[0, 25, 50, 75, 100].map((level) => (
+          <TouchableOpacity
+            key={level}
+            style={[styles.boostPill, value === level && styles.boostPillActive]}
+            onPress={() => onChange(level)}
+            disabled={disabled}
+          >
+            <Text style={[styles.boostText, value === level && styles.boostTextActive]}>
+              {level}%
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
   );
 }
 
@@ -178,6 +397,29 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 40,
   },
+  infoBanner: {
+    flexDirection: 'row',
+    gap: 10,
+    backgroundColor: 'rgba(0, 229, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 229, 255, 0.25)',
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 16,
+    alignItems: 'flex-start',
+  },
+  infoBannerText: {
+    flex: 1,
+    fontSize: 11,
+    color: '#CBD5E1',
+    lineHeight: 16,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   sectionHeader: {
     ...typography.caption,
     color: colors.textSecondary,
@@ -187,9 +429,37 @@ const styles = StyleSheet.create({
     marginTop: 14,
     fontWeight: '600',
   },
+  saveProfileBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#161C2C',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 14,
+  },
+  saveProfileText: {
+    fontSize: 11,
+    color: colors.primary,
+    fontWeight: '700',
+  },
   presetsContainer: {
     gap: 8,
     paddingBottom: 6,
+  },
+  customProfilesBlock: {
+    marginTop: 10,
+  },
+  customTitle: {
+    fontSize: 11,
+    color: '#A5B4FC',
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  customPillRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   presetPill: {
     paddingHorizontal: 16,
@@ -322,7 +592,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   boostPill: {
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 14,
     backgroundColor: colors.surfaceHighlight,
@@ -338,5 +608,49 @@ const styles = StyleSheet.create({
   boostTextActive: {
     color: '#0A0D14',
     fontWeight: '700',
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.72)',
+    justifyContent: 'center',
+    padding: 22,
+  },
+  modalCard: {
+    backgroundColor: '#141A28',
+    borderRadius: 20,
+    padding: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  modalTitle: {
+    ...typography.h3,
+    color: '#FFFFFF',
+  },
+  input: {
+    backgroundColor: '#0A0D14',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    color: '#FFFFFF',
+    marginBottom: 14,
+  },
+  modalSaveBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 14,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  modalSaveText: {
+    ...typography.bodyBold,
+    color: '#0A0D14',
   },
 });

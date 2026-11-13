@@ -1,6 +1,58 @@
 import { Track } from '../../domain/entities/track';
+import { ImportedTrackMetadata } from '../spotify/spotify-json-parser';
 
 export class M3uGenerator {
+  /**
+   * Parses extended M3U / M3U8 playlist files into track metadata entries.
+   */
+  public static parseM3u(m3uContent: string): ImportedTrackMetadata[] {
+    const lines = m3uContent.split(/\r?\n/).map((l) => l.trim());
+    const results: ImportedTrackMetadata[] = [];
+    let pendingMeta: ImportedTrackMetadata | null = null;
+
+    for (const line of lines) {
+      if (!line || line.startsWith('#EXTM3U') || line.startsWith('#PLAYLIST:')) {
+        continue;
+      }
+
+      if (line.startsWith('#EXTINF:')) {
+        const commaIndex = line.indexOf(',');
+        const headerPart = commaIndex >= 0 ? line.slice(8, commaIndex) : line.slice(8);
+        const seconds = Number(headerPart.split(' ')[0]);
+        const label = commaIndex >= 0 ? line.slice(commaIndex + 1).trim() : '';
+
+        let artist: string | undefined;
+        let title = label;
+        const dashIdx = label.indexOf(' - ');
+        if (dashIdx > 0) {
+          artist = label.slice(0, dashIdx).trim();
+          title = label.slice(dashIdx + 3).trim();
+        }
+
+        pendingMeta = {
+          title: title || label,
+          artist,
+          durationMs: !isNaN(seconds) && seconds > 0 ? Math.round(seconds * 1000) : undefined,
+        };
+      } else if (!line.startsWith('#')) {
+        if (pendingMeta && pendingMeta.title) {
+          results.push(pendingMeta);
+          pendingMeta = null;
+        } else {
+          // Bare URI line without preceding #EXTINF
+          const fileName = line.split('/').pop()?.replace(/\.[^/.]+$/, '') || line;
+          results.push({ title: decodeURIComponent(fileName) });
+        }
+      }
+    }
+
+    if (pendingMeta && pendingMeta.title) {
+      results.push(pendingMeta);
+    }
+
+    return results;
+  }
+
   /**
    * Generates a standard UTF-8 extended M3U playlist file content.
    */

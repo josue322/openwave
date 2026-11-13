@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/xml/automotive_app_desc.xml",
+        "source": "expo.modules.openwavenative.openwave-native-main-57:/xml/automotive_app_desc.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/xml/openwave_widget_info.xml",
+        "source": "expo.modules.openwavenative.openwave-native-main-57:/xml/openwave_widget_info.xml"
+    }
+]

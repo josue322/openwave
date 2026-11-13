@@ -81,5 +81,29 @@ describe('usePlayerStore', () => {
     store.cycleRepeatMode();
     expect(usePlayerStore.getState().repeatMode).toBe('off');
   });
+
+  test('setPlaybackSpeed and updateTrackInQueue update state without resetting positionMs', () => {
+    usePlayerStore.getState().setQueue([mockTrack1, mockTrack2], 0);
+    usePlayerStore.getState().setPosition(45000);
+
+    usePlayerStore.getState().setPlaybackSpeed(1.5);
+    expect(usePlayerStore.getState().playbackSpeed).toBe(1.5);
+
+    usePlayerStore.getState().updateTrackInQueue('1', { isFavorite: true });
+    const state = usePlayerStore.getState();
+    expect(state.currentTrack?.isFavorite).toBe(true);
+    expect(state.queue[0].isFavorite).toBe(true);
+    expect(state.positionMs).toBe(45000);
+  });
+
+  test('syncQueueState updates queue and queueIndex without zeroing positionMs', () => {
+    usePlayerStore.getState().setQueue([mockTrack1, mockTrack2], 0);
+    usePlayerStore.getState().setPosition(62000);
+
+    usePlayerStore.getState().syncQueueState([mockTrack2, mockTrack1], 1);
+    const state = usePlayerStore.getState();
+    expect(state.queueIndex).toBe(1);
+    expect(state.positionMs).toBe(62000);
+  });
 });
 

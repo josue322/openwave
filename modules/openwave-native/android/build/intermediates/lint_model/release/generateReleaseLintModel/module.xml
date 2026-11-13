@@ -1,0 +1,19 @@
+<lint-module
+    format="1"
+    dir="C:\Users\josue\Desktop\OPENWAVE\modules\openwave-native\android"
+    name=":openwave-native"
+    type="LIBRARY"
+    maven="expo.modules.openwavenative:openwave-native:1.0.0"
+    agpVersion="9.2.1"
+    buildFolder="build"
+    bootClassPath="C:\Android-SDK\platforms\android-37.0\android.jar;C:\Android-SDK\build-tools\36.0.0\core-lambda-stubs.jar"
+    javaSourceLevel="17"
+    compileTarget="android-37.0"
+    neverShrinking="true"
+    highlightGradualR8Api="false">
+  <lintOptions
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true"/>
+  <variant name="release"/>
+</lint-module>

@@ -1,23 +1,42 @@
 import * as SQLite from 'expo-sqlite';
-import { SCHEMA_V1 } from './schema';
+import {
+  SCHEMA_V1,
+  SCHEMA_V3,
+  SCHEMA_V4_TABLES,
+  SCHEMA_V4_COLUMNS,
+} from './schema';
 
 const DB_NAME = 'openwave.db';
 let dbInstance: SQLite.SQLiteDatabase | null = null;
+let dbInitPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
 export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (dbInstance) {
     return dbInstance;
   }
+  if (dbInitPromise) {
+    return dbInitPromise;
+  }
 
-  dbInstance = await SQLite.openDatabaseAsync(DB_NAME);
+  dbInitPromise = (async () => {
+    const db = await SQLite.openDatabaseAsync(DB_NAME);
 
-  // Enable foreign keys and Write-Ahead Logging (WAL) for high performance
-  await dbInstance.execAsync('PRAGMA foreign_keys = ON;');
-  await dbInstance.execAsync('PRAGMA journal_mode = WAL;');
+    // Enable foreign keys and Write-Ahead Logging (WAL) for high performance
+    await db.execAsync('PRAGMA foreign_keys = ON;');
+    await db.execAsync('PRAGMA journal_mode = WAL;');
 
-  await initMigrations(dbInstance);
+    await initMigrations(db);
+    dbInstance = db;
+    return db;
+  })();
 
-  return dbInstance;
+  try {
+    return await dbInitPromise;
+  } catch (err) {
+    dbInitPromise = null;
+    dbInstance = null;
+    throw err;
+  }
 }
 
 async function initMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
@@ -38,7 +57,7 @@ async function initMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
   if (currentVersion < 1) {
     await db.execAsync(SCHEMA_V1);
     await db.runAsync(
-      'INSERT INTO _migrations (version, applied_at) VALUES (?, ?)',
+      'INSERT OR IGNORE INTO _migrations (version, applied_at) VALUES (?, ?)',
       1,
       Date.now()
     );
@@ -51,8 +70,33 @@ async function initMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
       // Column might already exist in fresh table creations
     }
     await db.runAsync(
-      'INSERT INTO _migrations (version, applied_at) VALUES (?, ?)',
+      'INSERT OR IGNORE INTO _migrations (version, applied_at) VALUES (?, ?)',
       2,
+      Date.now()
+    );
+  }
+
+  if (currentVersion < 3) {
+    await db.execAsync(SCHEMA_V3);
+    await db.runAsync(
+      'INSERT OR IGNORE INTO _migrations (version, applied_at) VALUES (?, ?)',
+      3,
+      Date.now()
+    );
+  }
+
+  if (currentVersion < 4) {
+    for (const stmt of SCHEMA_V4_COLUMNS) {
+      try {
+        await db.execAsync(stmt);
+      } catch {
+        // Ignore if column already exists
+      }
+    }
+    await db.execAsync(SCHEMA_V4_TABLES);
+    await db.runAsync(
+      'INSERT OR IGNORE INTO _migrations (version, applied_at) VALUES (?, ?)',
+      4,
       Date.now()
     );
   }

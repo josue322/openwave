@@ -20,6 +20,13 @@
 - [x] **FASE 8 — Distribución APK y Configuración de Compilación**
 - [x] **FASE 9 — Módulo de Artistas Independientes**
 - [x] **FASE 10 — Experiencia de Usuario: Español 100%, Almacenamiento Permanente, Personalización de Portadas y Cero Solapamiento de Audio**
+- [x] **FASE A — Controles Reales (Shuffle/Repeat/Velocidad/Volumen/Sleep Timer), Lock Screen (`expo-audio`), Favoritos e Historial persistentes, Reanudar Sesión**
+- [x] **FASE B — Carpetas SAF, Ordenamientos, Álbumes/Artistas/Géneros/Carpetas, Salud de Biblioteca, Edición Metadatos y Playlists Completas (M3U Import/Export)**
+- [x] **FASE C — Búsqueda Unificada Local + Online, Exploración Creative Commons / Internet Archive, Gestor de Descargas Resumibles y Red**
+- [x] **FASE D — Letras Sincronizadas `.lrc`, Historial y Estadísticas, Precarga Gapless (`preload`) y Auto-reproducir Similares**
+- [x] **FASE E — Tema Oscuro/Claro, Color Dinámico por Portada, Idioma ES/EN, Skeletons, Caché, Permisos y Logs Diagnósticos**
+- [x] **FASE F — Módulo Nativo AndroidX Media3 + DSP Real (`AudioEffect` EQ, Graves, Surround, Balance L/R PCM, Loudness, ID3 en archivo)** *(Código Kotlin + Expo Module + Bridge TS implementados; requiere Development Build / APK para ejecución en hardware)*
+- [x] **FASE G — Android Auto, Widgets de Escritorio, Chromecast y Config Plugin Nativo** *(Código Kotlin + Manifest + Widget XML + Cast + Config Plugin implementados; compilar APK vía `eas build` o `expo run:android`)*
 
 ---
 
@@ -188,3 +195,29 @@
   - En `ExpoAudioAdapter`: al cambiar de pista se pausa de inmediato la reproducción nativa previa antes de liberar el reproductor (`player.pause()` -> `player.remove()`), evitando que dos pistas suenen a la vez.
   - Se implementó un token de carga asíncrona (`loadToken`) para prevenir condiciones de carrera al presionar canciones rápidamente.
   - Al presionar una canción que ya estaba cargada, se reinicia inmediatamente desde el segundo 0 (`seekTo(0)`) y se reanuda la reproducción.
+
+---
+
+### [x] FASES A – E — Implementación Completa Expo SDK 58 (Compatible Expo Go)
+- [x] **Fase A:** Controles completos en Reproductor (`app/player/index.tsx`: Shuffle, Repeat Off/All/One, Velocidad 0.5x–2.0x, Volumen inline, Sleep Timer, Seekbar medido con arrastre `PanResponder`, Compartir, Propiedades técnicas), Lock Screen Controls (`expo-audio` `setActiveForLockScreen` + `doNotMix`), Sesión Persistente (`playback_session` SQLite) y Reordenar/Vaciar Cola (`app/player/queue.tsx`).
+- [x] **Fase B:** Migración SQLite v4 (`artist_name`, `album_title`, `folder_path`, `lyrics_lrc`), Importación por Carpetas SAF (`folder-manager.ts`), Detección de duplicados/rotos/sin portada (`library-health.ts`), Ordenamientos (Nombre/Artista/Álbum/Duración/Fecha), Agrupaciones (Álbumes, Artistas, Géneros, Carpetas), Edición de Metadatos (`TrackMetadataModal`), Listas Inteligentes y Exportación/Importación `.m3u8` (`app/playlist/[id].tsx`, `app/importer/index.tsx`).
+- [x] **Fase C:** Búsqueda Unificada Local + Online con historial y sugerencias (`app/(tabs)/search.tsx`), Exploración Online Creative Commons + Internet Archive HTTPS (`app/explore/index.tsx`), Estado de Red (`network-monitor.ts`), Reintento automático de streaming y Gestor de Descargas Resumibles (`download-manager.ts`).
+- [x] **Fase D:** Parser y Visor de Letras sincronizadas `.lrc` (`lrc-parser.ts`, `LyricsModal.tsx`), Historial y Estadísticas (`app/stats/index.tsx`), Precarga Gapless (`preload`), Fade In por software y Auto-reproducir similares.
+- [x] **Fase E:** Modo Oscuro/Claro + Color personalizado + Adaptación por portada (`theme-hook.ts`), Idioma ES/EN (`translations.ts`), Skeleton Loading (`SkeletonLoader.tsx`), Configuración persistente (`settings-store.ts`), Limpieza de caché y almacenamiento real (`storage-usage.ts`) y Logs de diagnóstico (`error-logger.ts`).
+- [x] **Verificación:** `npx tsc --noEmit` (0 errores) y Jest (`9 suites / 45 tests aprobados`).
+
+---
+
+### [x] FASES F – G — Módulos Nativos Android (`modules/openwave-native`) y Config Plugin
+- [x] **Fase F — Media3 & Hardware DSP (`modules/openwave-native`):**
+  - [x] Servicio `OpenWaveMediaService` (`MediaLibraryService` + `ExoPlayer` + `ForwardingPlayer` sincronizado con `QueueManager`, Lock Screen, notificación y receptores Bluetooth/Audífonos).
+  - [x] Procesador PCM personalizado `ChannelBalanceAudioProcessor` para Balance Estéreo I/D.
+  - [x] Controlador DSP hardware `OpenWaveDspController` (`Equalizer`, `BassBoost`, `Virtualizer` / Surround, `LoudnessEnhancer` / Preamp / Normalización).
+  - [x] Extractor nativo `AudioMetadataExtractor` (`MediaMetadataRetriever` + `MediaExtractor` para tags reales, bitrate, frecuencia de muestreo y carátula incrustada) y escritor atómico `Id3TagWriter` para archivos `.mp3` (`ID3v2.3`).
+  - [x] Adaptador TypeScript `Media3AudioAdapter` (`src/playback/engine/media3-audio-adapter.ts`) y puente `OpenWaveNativeBridge` (`src/playback/native/openwave-native-bridge.ts`) con degradación segura en Expo Go.
+- [x] **Fase G — Ecosistema Android y Preparación Build:**
+  - [x] **Android Auto:** Árbol navegable (`Canciones`, `Favoritas`, `Álbumes`), búsqueda por voz (`onSearch`/`onGetSearchResult`) y descriptor `res/xml/automotive_app_desc.xml`.
+  - [x] **Widget de Escritorio Android:** `OpenWaveWidgetProvider` + layout responsivo oscuro 4x1 (`openwave_widget.xml`) con portada y controles Prev / Play-Pause / Next.
+  - [x] **Chromecast:** `OpenWaveCastOptionsProvider`, `OpenWaveCastController` y componente reutilizable `CastButton` (`src/components/player/CastButton.tsx`) integrado en Inicio y Reproductor Completo.
+  - [x] **Config Plugin Expo:** `plugins/withOpenWaveNative.js` registrado en `app.json`.
+  - [x] **Verificación en entorno:** `npx tsc --noEmit` (0 errores), Jest (`10 suites / 47 tests aprobados`) y pruebas `tests/native-bridge.test.ts`. *(Nota: la compilación binaria `.apk` / Gradle se ejecuta fuera de Expo Go con `npx expo run:android` o `eas build --platform android --profile preview`.)*

@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/interpolator/fast_out_slow_in.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/interpolator/fast_out_slow_in.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_0.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_0.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/interpolator/mr_linear_out_slow_in.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/interpolator/mr_linear_out_slow_in.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_0.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_0.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/interpolator/mr_fast_out_slow_in.xml",
+        "source": "expo.modules.openwavenative.openwave-native-mediarouter-1.8.1-6:/interpolator/mr_fast_out_slow_in.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_1.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_1.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_1.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_1.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/interpolator/btn_radio_to_off_mtrl_animation_interpolator_0.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/interpolator/btn_radio_to_off_mtrl_animation_interpolator_0.xml"
+    },
+    {
+        "merged": "expo.modules.openwavenative.openwave-native-release-56:/interpolator/btn_radio_to_on_mtrl_animation_interpolator_0.xml",
+        "source": "expo.modules.openwavenative.openwave-native-appcompat-1.7.1-10:/interpolator/btn_radio_to_on_mtrl_animation_interpolator_0.xml"
+    }
+]

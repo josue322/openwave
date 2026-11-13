@@ -1,3 +1,7 @@
+jest.mock('expo-sqlite', () => ({
+  openDatabaseAsync: jest.fn(),
+}));
+
 import { useEqualizerStore, EQUALIZER_PRESETS } from '../src/store/equalizer-store';
 
 describe('useEqualizerStore', () => {

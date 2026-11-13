@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
-import { ChevronDown, ArrowDownToLine, CheckCircle2, AlertTriangle, XCircle, FileSpreadsheet, FileJson } from 'lucide-react-native';
+import { ChevronDown, ArrowDownToLine, CheckCircle2, AlertTriangle, XCircle, FileSpreadsheet, FileJson, ListMusic, FolderPlus } from 'lucide-react-native';
+import { LocalFileImporter } from '../../src/core/utils/local-file-importer';
 import { colors } from '../../src/theme/colors';
 import { typography } from '../../src/theme/typography';
 import { useLibraryStore } from '../../src/store/library-store';
@@ -12,6 +13,7 @@ import { usePlaylistStore } from '../../src/store/playlist-store';
 import { StringMatcher, MatchClassification } from '../../src/core/utils/string-matcher';
 import { SpotifyJsonParser, ImportedTrackMetadata } from '../../src/integrations/spotify/spotify-json-parser';
 import { TakeoutCsvParser } from '../../src/integrations/youtube/takeout-csv-parser';
+import { M3uGenerator } from '../../src/integrations/exporter/m3u-generator';
 import { Track } from '../../src/domain/entities/track';
 
 interface MatchItem {
@@ -30,11 +32,11 @@ export default function ImporterScreen() {
   const [matchResults, setMatchResults] = useState<MatchItem[]>([]);
   const [importedFileName, setImportedFileName] = useState<string | null>(null);
 
-  const handlePickFile = async (type: 'json' | 'csv') => {
+  const handlePickFile = async (type: 'json' | 'csv' | 'm3u') => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: type === 'json' ? 'application/json' : ['text/csv', 'text/comma-separated-values', 'text/plain'],
-        copyToCacheDirectory: true,
+        type: ['*/*'],
+        copyToCacheDirectory: false,
       });
 
       if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -45,13 +47,21 @@ export default function ImporterScreen() {
       setImportedFileName(file.name);
       setIsProcessing(true);
 
-      const content = await FileSystem.readAsStringAsync(file.uri);
+      let content = '';
+      try {
+        content = await FileSystem.readAsStringAsync(file.uri);
+      } catch {
+        const res = await fetch(file.uri);
+        content = await res.text();
+      }
       let items: ImportedTrackMetadata[] = [];
 
       if (type === 'json') {
         items = SpotifyJsonParser.parse(content);
-      } else {
+      } else if (type === 'csv') {
         items = TakeoutCsvParser.parseCsv(content);
+      } else {
+        items = M3uGenerator.parseM3u(content);
       }
 
       if (items.length === 0) {
@@ -128,7 +138,7 @@ export default function ImporterScreen() {
   const notFoundCount = matchResults.filter((m) => m.classification === 'NOT_FOUND' || m.classification === 'PARTIAL').length;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Top Header */}
       <View style={styles.topBar}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
@@ -154,8 +164,10 @@ export default function ImporterScreen() {
           >
             <FileJson color={colors.primary} size={24} />
             <View style={styles.pickerButtonTextContainer}>
-              <Text style={styles.pickerTitle}>Spotify (JSON)</Text>
-              <Text style={styles.pickerDesc}>Historial o exportación oficial de datos</Text>
+              <Text style={styles.pickerTitle}>Spotify (JSON oficial)</Text>
+              <Text style={styles.pickerDesc}>
+                Soporta Playlist1.json, YourLibrary.json y StreamingHistory
+              </Text>
             </View>
           </TouchableOpacity>
 
@@ -167,8 +179,23 @@ export default function ImporterScreen() {
           >
             <FileSpreadsheet color={colors.secondary} size={24} />
             <View style={styles.pickerButtonTextContainer}>
-              <Text style={styles.pickerTitle}>YouTube Music (Takeout CSV)</Text>
-              <Text style={styles.pickerDesc}>Exportación de playlists desde Google Takeout</Text>
+              <Text style={styles.pickerTitle}>YouTube Music / Exportify (CSV)</Text>
+              <Text style={styles.pickerDesc}>
+                Listas de Google Takeout CSV o Spotify Exportify CSV
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.pickerButton}
+            onPress={() => handlePickFile('m3u')}
+            disabled={isProcessing}
+            activeOpacity={0.8}
+          >
+            <ListMusic color="#A5B4FC" size={24} />
+            <View style={styles.pickerButtonTextContainer}>
+              <Text style={styles.pickerTitle}>Playlist M3U / M3U8</Text>
+              <Text style={styles.pickerDesc}>Archivos universales de listas musicales locales</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -210,6 +237,58 @@ export default function ImporterScreen() {
               <ArrowDownToLine color="#0A0D14" size={20} />
               <Text style={styles.saveButtonText}>Guardar como Playlist Local ({exactCount + probableCount})</Text>
             </TouchableOpacity>
+
+            {notFoundCount > 0 && (
+              <TouchableOpacity
+                style={styles.uploadMissingBtn}
+                onPress={async () => {
+                  try {
+                    const added = await LocalFileImporter.pickAndImportAudioFiles();
+                    if (added.length > 0) {
+                      Alert.alert(
+                        'Audios agregados',
+                        `Se importaron ${added.length} archivo(s) local(es). Vuelve a seleccionar tu archivo CSV/JSON para reemparejarlos.`
+                      );
+                    }
+                  } catch (e: any) {
+                    Alert.alert('Error', e?.message || 'No se pudieron importar los archivos.');
+                  }
+                }}
+                activeOpacity={0.8}
+              >
+                <FolderPlus color={colors.primary} size={18} />
+                <Text style={styles.uploadMissingText}>Subir audios locales faltantes ({notFoundCount})</Text>
+              </TouchableOpacity>
+            )}
+
+            <View style={styles.previewSection}>
+              <Text style={styles.previewHeading}>Vista previa del archivo ({matchResults.length} pistas)</Text>
+              {matchResults.slice(0, 15).map((m, idx) => (
+                <View key={`${m.external.title}_${idx}`} style={styles.previewRow}>
+                  <View style={{ flex: 1, marginRight: 8 }}>
+                    <Text style={styles.previewTitle} numberOfLines={1}>
+                      {m.external.title}
+                    </Text>
+                    <Text style={styles.previewSub} numberOfLines={1}>
+                      {m.external.artist || 'Artista desconocido'}
+                    </Text>
+                  </View>
+                  <Text
+                    style={[
+                      styles.previewBadge,
+                      {
+                        color:
+                          m.classification === 'EXACT' || m.classification === 'PROBABLE'
+                            ? colors.success
+                            : colors.textMuted,
+                      },
+                    ]}
+                  >
+                    {m.local ? 'Local ✓' : 'Sin copia local'}
+                  </Text>
+                </View>
+              ))}
+            </View>
           </View>
         )}
       </ScrollView>
@@ -327,5 +406,54 @@ const styles = StyleSheet.create({
   saveButtonText: {
     ...typography.bodyBold,
     color: '#0A0D14',
+  },
+  uploadMissingBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 14,
+    paddingVertical: 12,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    gap: 8,
+  },
+  uploadMissingText: {
+    ...typography.caption,
+    color: colors.primary,
+    fontWeight: '700',
+  },
+  previewSection: {
+    marginTop: 18,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  previewHeading: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  previewRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 7,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.04)',
+  },
+  previewTitle: {
+    ...typography.caption,
+    color: colors.textPrimary,
+    fontWeight: '600',
+  },
+  previewSub: {
+    ...typography.small,
+    color: colors.textMuted,
+  },
+  previewBadge: {
+    ...typography.small,
+    fontWeight: '700',
   },
 });

@@ -103,3 +103,58 @@ CREATE INDEX IF NOT EXISTS idx_playlist_tracks_pos ON playlist_tracks(playlist_i
 CREATE INDEX IF NOT EXISTS idx_history_played_at ON play_history(played_at DESC);
 `;
 
+export const SCHEMA_V3 = `
+CREATE TABLE IF NOT EXISTS playback_session (
+    id TEXT PRIMARY KEY NOT NULL,
+    track_id TEXT,
+    queue_ids_json TEXT,
+    position_ms INTEGER DEFAULT 0,
+    shuffle INTEGER DEFAULT 0,
+    repeat_mode TEXT DEFAULT 'off',
+    playback_speed REAL DEFAULT 1.0,
+    volume REAL DEFAULT 1.0,
+    updated_at INTEGER NOT NULL
+);
+`;
+
+export const SCHEMA_V4_TABLES = `
+CREATE TABLE IF NOT EXISTS excluded_folders (
+    path TEXT PRIMARY KEY NOT NULL,
+    created_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS scanned_folders (
+    uri TEXT PRIMARY KEY NOT NULL,
+    label TEXT,
+    added_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS search_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    query TEXT NOT NULL UNIQUE,
+    searched_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS app_preferences (
+    key TEXT PRIMARY KEY NOT NULL,
+    value TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS error_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    level TEXT NOT NULL,
+    source TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+);
+`;
+
+export const SCHEMA_V4_COLUMNS = [
+  'ALTER TABLE tracks ADD COLUMN artist_name TEXT;',
+  'ALTER TABLE tracks ADD COLUMN album_title TEXT;',
+  'ALTER TABLE tracks ADD COLUMN folder_path TEXT;',
+  'ALTER TABLE tracks ADD COLUMN lyrics_lrc TEXT;',
+  'ALTER TABLE tracks ADD COLUMN is_corrupt INTEGER DEFAULT 0;',
+  'ALTER TABLE playlists ADD COLUMN artwork_uri TEXT;',
+];
+

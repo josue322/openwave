@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AlertTriangle, RefreshCw } from 'lucide-react-native';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
+import { ErrorLogger } from './error-logger';
 
 interface Props {
   children: ReactNode;
@@ -26,6 +27,9 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('OpenWave Uncaught Error:', error, errorInfo);
+    ErrorLogger.log('ErrorBoundary', `${error?.message || 'Unknown UI error'}`, 'ERROR').catch(
+      () => {}
+    );
   }
 
   private handleReset = () => {

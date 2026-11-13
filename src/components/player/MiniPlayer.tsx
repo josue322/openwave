@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Play, Pause, SkipBack, SkipForward, Heart, Music } from 'lucide-react-native';
 import { usePlayerStore } from '../../store/player-store';
-import { useLibraryStore } from '../../store/library-store';
 import { PlaybackService } from '../../playback/service/playback-service';
+import { toggleFavoritePersisted } from '../../core/utils/track-actions';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 
@@ -12,9 +12,10 @@ export const MiniPlayer: React.FC = () => {
   const router = useRouter();
   const currentTrack = usePlayerStore((s) => s.currentTrack);
   const isPlaying = usePlayerStore((s) => s.isPlaying);
+  const isBuffering = usePlayerStore((s) => s.isBuffering);
+  const playbackError = usePlayerStore((s) => s.playbackError);
   const positionMs = usePlayerStore((s) => s.positionMs);
   const durationMs = usePlayerStore((s) => s.durationMs);
-  const toggleFavorite = useLibraryStore((s) => s.toggleFavorite);
 
   const playbackService = PlaybackService.getInstance();
 
@@ -55,7 +56,9 @@ export const MiniPlayer: React.FC = () => {
                 {currentTrack.title}
               </Text>
               <Text style={styles.artist} numberOfLines={1}>
-                {currentTrack.artistName || 'Artista desconocido'}
+                {playbackError
+                  ? `⚠️ ${playbackError}`
+                  : currentTrack.artistName || 'Artista desconocido'}
               </Text>
             </View>
           </TouchableOpacity>
@@ -75,7 +78,9 @@ export const MiniPlayer: React.FC = () => {
               style={styles.playButton}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              {isPlaying ? (
+              {isBuffering ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : isPlaying ? (
                 <Pause color={colors.textPrimary} size={22} fill={colors.textPrimary} />
               ) : (
                 <Play color={colors.textPrimary} size={22} fill={colors.textPrimary} style={{ marginLeft: 2 }} />
@@ -91,7 +96,7 @@ export const MiniPlayer: React.FC = () => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => toggleFavorite(currentTrack.id)}
+              onPress={() => toggleFavoritePersisted(currentTrack)}
               style={styles.iconButton}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
@@ -110,8 +115,9 @@ export const MiniPlayer: React.FC = () => {
 
 const styles = StyleSheet.create({
   wrapper: {
-    paddingHorizontal: 12,
-    paddingBottom: 6,
+    paddingHorizontal: 10,
+    paddingTop: 8,
+    paddingBottom: 4,
     backgroundColor: 'transparent',
   },
   capsule: {
@@ -143,13 +149,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   trackInfoBlock: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#274268', // Styled blue accent pill as in Reference 1
     borderRadius: 18,
     paddingVertical: 6,
     paddingHorizontal: 8,
-    maxWidth: '56%',
+    marginRight: 8,
   },
   artworkContainer: {
     width: 38,
@@ -185,8 +192,8 @@ const styles = StyleSheet.create({
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    paddingRight: 8,
+    gap: 8,
+    paddingRight: 4,
   },
   iconButton: {
     padding: 4,
